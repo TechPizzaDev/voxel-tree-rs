@@ -9,7 +9,16 @@ use crate::{
 
 #[derive(Debug)]
 pub enum SubmitError {
-    BufferPoolExhausted(TryRecvError),
+    BufferPoolEmpty,
+    BufferPoolDisconnected,
+}
+impl From<TryRecvError> for SubmitError {
+    fn from(value: TryRecvError) -> Self {
+        match value {
+            TryRecvError::Empty => SubmitError::BufferPoolEmpty,
+            TryRecvError::Disconnected => SubmitError::BufferPoolDisconnected,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -64,15 +73,12 @@ impl QueryInfo {
         let index = self.pool_size;
         self.pool_size = index.strict_add(1);
 
-        QueryBuffer::new(
-            index,
-            device.create_buffer(&wgpu::BufferDescriptor {
-                label: Some(&format!("Query Result {}", index)),
-                size: Self::to_query_size(&self.query_range),
-                usage: BufferUsages::COPY_DST | BufferUsages::MAP_READ,
-                mapped_at_creation: false,
-            }),
-        )
+        QueryBuffer::new(device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some(&format!("Query Result {}", index)),
+            size: Self::to_query_size(&self.query_range),
+            usage: BufferUsages::COPY_DST | BufferUsages::MAP_READ,
+            mapped_at_creation: false,
+        }))
     }
 
     pub fn add_buffer(&mut self, device: &wgpu::Device) {
@@ -92,7 +98,7 @@ impl QueryInfo {
 
         drop(view);
         query.buffer.unmap();
-        
+
         self.buf_pool
             .send(query.buffer)
             .map_err(|_| PollError::BufferPool(query.frame))?;
@@ -104,10 +110,7 @@ impl QueryInfo {
         encoder: &mut CommandEncoder,
         frame: FrameIndex,
     ) -> Result<(), SubmitError> {
-        let buffer = self
-            .buf_pool
-            .try_recv()
-            .map_err(SubmitError::BufferPoolExhausted)?;
+        let buffer = self.buf_pool.try_recv()?;
 
         encoder.resolve_query_set(
             &self.query_set,
@@ -140,12 +143,11 @@ impl QueryInfo {
 }
 
 struct QueryBuffer {
-    index: u32,
     inner: Buffer,
 }
 impl QueryBuffer {
-    fn new(index: u32, inner: Buffer) -> Self {
-        Self { index, inner }
+    fn new(inner: Buffer) -> Self {
+        Self { inner }
     }
 }
 impl Deref for QueryBuffer {
