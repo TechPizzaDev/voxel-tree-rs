@@ -23,7 +23,6 @@ struct UniformData {
 }
 
 pub struct AppState {
-    window: Arc<Window>,
     window_size: winit::dpi::PhysicalSize<u32>,
     device: wgpu::Device,
     queue: wgpu::Queue,
@@ -39,6 +38,9 @@ pub struct AppState {
     aspect_ratio: f32,
     pub(crate) current_frame: FrameIndex,
     main_pass_time_series: VecDeque<PlotPoint>,
+
+    // Drop order requires us to drop window last, or we segfault.
+    window: Arc<Window>,
 }
 
 impl AppState {
