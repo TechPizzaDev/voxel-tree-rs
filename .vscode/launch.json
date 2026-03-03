@@ -5,25 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run 'voxel-tree-rs'",
+            "name": "Run 'client-bin'",
             "type": "lldb",
             "request": "launch",
             "cargo": {
                 "args": [
                     "run",
-                    "--bin=voxel-tree-rs"
+                    "--bin=client-bin"
                 ]
             },
             "args": []
         },
         {
-            "name": "Test 'voxel-tree-rs'",
+            "name": "Test 'client-bin'",
             "type": "lldb",
             "request": "launch",
             "cargo": {
                 "args": [
                     "test",
-                    "--bin=voxel-tree-rs"
+                    "--bin=client-bin"
                 ]
             }
         }

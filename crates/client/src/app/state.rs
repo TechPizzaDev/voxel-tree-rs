@@ -2,13 +2,10 @@ use std::{borrow::Cow, sync::Arc};
 
 use bytemuck::{Pod, Zeroable};
 use glam::{Mat4, Vec3, Vec4};
-use wgpu::{BindGroup, Buffer, BufferUsages, QuerySet, RenderPipeline};
-use winit::{
-    application::ApplicationHandler,
-    event::WindowEvent,
-    event_loop::{ActiveEventLoop, ControlFlow, EventLoop},
-    window::{Window, WindowId},
-};
+use wgpu::{BindGroup, Buffer, BufferUsages, InstanceFlags, RenderPipeline, SurfaceError};
+use winit::{event::WindowEvent, window::Window};
+
+use crate::{app::FrameIndex, egui_tools::EguiRenderer, gpu::query::QueryInfo};
 
 #[derive(Clone, Copy, Default, Pod, Zeroable)]
 #[repr(C)]
@@ -17,32 +14,49 @@ struct UniformData {
     time: Vec4,
 }
 
-struct State {
+pub struct AppState {
     window: Arc<Window>,
+    window_size: winit::dpi::PhysicalSize<u32>,
     device: wgpu::Device,
     queue: wgpu::Queue,
-    size: winit::dpi::PhysicalSize<u32>,
     surface: wgpu::Surface<'static>,
     surface_format: wgpu::TextureFormat,
+    pub(crate) egui_renderer: EguiRenderer,
+    scale_factor: f32,
 
+    query_info: Option<QueryInfo>,
     uniform_buffer: Buffer,
     bind_group: BindGroup,
     render_pipeline: RenderPipeline,
     aspect_ratio: f32,
-    current_frame: u64,
+    pub(crate) current_frame: FrameIndex,
 }
 
-impl State {
-    async fn new(window: Arc<Window>) -> State {
-        let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor::default());
-        let adapter = instance
-            .request_adapter(&wgpu::RequestAdapterOptions::default())
-            .await
-            .unwrap();
+impl AppState {
+    pub(crate) async fn new(window: Arc<Window>) -> AppState {
+        let mut instance_desc = wgpu::InstanceDescriptor::default();
+        instance_desc.flags = InstanceFlags::debugging()
+            .with_env()
+            .union(InstanceFlags::AUTOMATIC_TIMESTAMP_NORMALIZATION);
+        let instance = wgpu::Instance::new(&instance_desc);
 
-        let (device, queue) = adapter.request_device(&wgpu::DeviceDescriptor::default()).await.unwrap();
+        let mut adapter_desc = wgpu::RequestAdapterOptions::default();
+        adapter_desc.power_preference = wgpu::PowerPreference::HighPerformance;
+        let adapter = instance.request_adapter(&adapter_desc).await.unwrap();
 
-        let size = window.inner_size();
+        let optional_features =
+            wgpu::Features::TIMESTAMP_QUERY | wgpu::Features::TIMESTAMP_QUERY_INSIDE_PASSES;
+        let cross_features = adapter.features().intersection(optional_features);
+        if !cross_features.is_empty() {
+            println!("requesting optional wgpu features: {}", cross_features);
+        }
+
+        let mut device_desc = wgpu::DeviceDescriptor::default();
+        device_desc.required_features.insert(cross_features);
+        let (device, queue) = adapter.request_device(&device_desc).await.unwrap();
+        assert_eq!(queue.get_timestamp_period(), 1.0);
+
+        let window_size = window.inner_size();
 
         let surface = instance.create_surface(window.clone()).unwrap();
         let caps = surface.get_capabilities(&adapter);
@@ -112,19 +126,29 @@ impl State {
             cache: None,
         });
 
-        let mut state = State {
+        let query_info = device
+            .features()
+            .contains(wgpu::Features::TIMESTAMP_QUERY_INSIDE_PASSES)
+            .then(|| QueryInfo::new(0..2, &device));
+
+        let egui_renderer = EguiRenderer::new(&device, surface_format, None, 1, &window);
+
+        let mut state = AppState {
             window,
+            window_size,
             device,
             queue,
-            size,
             surface,
             surface_format,
+            egui_renderer,
+            scale_factor: 1.0,
 
+            query_info,
             uniform_buffer,
             bind_group,
             render_pipeline,
             aspect_ratio: 1.0,
-            current_frame: 0,
+            current_frame: 0.into(),
         };
 
         // Configure surface for the first time
@@ -133,7 +157,7 @@ impl State {
         state
     }
 
-    fn get_window(&self) -> &Window {
+    pub(crate) fn get_window(&self) -> &Window {
         &self.window
     }
 
@@ -144,25 +168,28 @@ impl State {
             // Request compatibility with the sRGB-format texture view we‘re going to create later.
             view_formats: vec![self.surface_format.add_srgb_suffix()],
             alpha_mode: wgpu::CompositeAlphaMode::Auto,
-            width: self.size.width,
-            height: self.size.height,
+            width: self.window_size.width,
+            height: self.window_size.height,
             desired_maximum_frame_latency: 2,
             present_mode: wgpu::PresentMode::AutoVsync,
         };
         self.surface.configure(&self.device, &surface_config);
-        self.aspect_ratio = self.size.width as f32 / self.size.height as f32;
+        self.aspect_ratio = self.window_size.width as f32 / self.window_size.height as f32;
     }
 
-    fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {
-        self.size = new_size;
+    pub(crate) fn handle_event(&mut self, event: &WindowEvent) {
+        // let egui render to process the event first
+        self.egui_renderer.handle_input(&self.window, event);
+    }
+
+    pub(crate) fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {
+        self.window_size = new_size;
 
         self.configure_surface();
     }
 
-    fn render(&mut self) {
-        self.current_frame += 1;
-
-        let time = self.current_frame as f32 / 60.0;
+    pub(crate) fn render(&mut self) {
+        let time = self.current_frame.0 as f32 / 60.0;
 
         let proj_mat = Mat4::perspective_lh(
             (2.0 * std::f32::consts::PI) / 7.0,
@@ -183,11 +210,16 @@ impl State {
         self.queue
             .write_buffer(&self.uniform_buffer, 0, bytemuck::bytes_of(&data));
 
-        let surface_texture = self
-            .surface
-            .get_current_texture()
-            .expect("failed to acquire next swapchain texture");
-        let texture_view = surface_texture
+        let surface_texture = match self.surface.get_current_texture() {
+            Ok(tex) => tex,
+            Err(SurfaceError::Outdated) => {
+                // Ignoring outdated to allow resizing and minimization
+                println!("wgpu surface outdated");
+                return;
+            }
+            Err(err) => panic!("failed to acquire next swapchain texture: {}", err),
+        };
+        let surface_view = surface_texture
             .texture
             .create_view(&wgpu::TextureViewDescriptor {
                 // Without add_srgb_suffix() the image we will be working with
@@ -197,11 +229,21 @@ impl State {
             });
 
         let mut encoder = self.device.create_command_encoder(&Default::default());
+
+        let timestamp_writes = self
+            .query_info
+            .as_ref()
+            .map(|q| wgpu::RenderPassTimestampWrites {
+                query_set: q.query_set(),
+                beginning_of_pass_write_index: Some(0),
+                end_of_pass_write_index: Some(1),
+            });
+
         // Create the renderpass which will clear the screen.
         let mut rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: None,
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                view: &texture_view,
+                view: &surface_view,
                 depth_slice: None,
                 resolve_target: None,
                 ops: wgpu::Operations {
@@ -215,7 +257,7 @@ impl State {
                 },
             })],
             depth_stencil_attachment: None,
-            timestamp_writes: None,
+            timestamp_writes,
             occlusion_query_set: None,
             multiview_mask: None,
         });
@@ -230,72 +272,8 @@ impl State {
         drop(rpass);
 
         self.queue.submit([encoder.finish()]);
+
         self.window.pre_present_notify();
         surface_texture.present();
     }
-}
-
-#[derive(Default)]
-struct App {
-    state: Option<State>,
-}
-
-impl ApplicationHandler for App {
-    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        let window = Arc::new(
-            event_loop
-                .create_window(Window::default_attributes())
-                .unwrap(),
-        );
-
-        let state = pollster::block_on(State::new(window.clone()));
-        self.state = Some(state);
-
-        window.request_redraw();
-    }
-
-    fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
-        let state = self.state.as_mut().unwrap();
-        match event {
-            WindowEvent::CloseRequested => {
-                println!("The close button was pressed; stopping");
-                event_loop.exit();
-            }
-            WindowEvent::RedrawRequested => {
-                state.render();
-                state.get_window().request_redraw();
-            }
-            WindowEvent::Resized(size) => {
-                // Reconfigures the size of the surface. We do not re-render
-                // here as this event is always followed up by redraw request.
-                state.resize(size);
-            }
-            _ => (),
-        }
-    }
-}
-
-fn main() {
-    // wgpu uses `log` for all of our logging, so we initialize a logger with the `env_logger` crate.
-    //
-    // To change the log level, set the `RUST_LOG` environment variable. See the `env_logger`
-    // documentation for more information.
-    env_logger::init();
-
-    let event_loop = EventLoop::new().unwrap();
-
-    // When the current loop iteration finishes, immediately begin a new
-    // iteration regardless of whether or not new events are available to
-    // process. Preferred for applications that want to render as fast as
-    // possible, like games.
-    event_loop.set_control_flow(ControlFlow::Poll);
-
-    // When the current loop iteration finishes, suspend the thread until
-    // another event arrives. Helps keeping CPU utilization low if nothing
-    // is happening, which is preferred if the application might be idling in
-    // the background.
-    // event_loop.set_control_flow(ControlFlow::Wait);
-
-    let mut app = App::default();
-    event_loop.run_app(&mut app).unwrap();
 }

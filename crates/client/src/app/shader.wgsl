@@ -95,7 +95,7 @@ fn frag_voxel(near: vec3f, step: vec3f) -> vec4f {
     for (; i < NumSteps; i++) {
         let off = (vec3f(sin(uniforms.time.x * 0.2), 0f, 0f) + 1f) * 0.25;
 
-        let s = getVoxel(mapPos); //textureSampleLevel(myTexture, mySampler, uv * 0.5f, 0f).r;
+        let s = getVoxel(mapPos);
         let threshold = (sin(uniforms.time.x * 0.5) + 1.0) * 0.5;
         if s < 0.0 {
             count += 1u;
