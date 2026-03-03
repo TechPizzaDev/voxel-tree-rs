@@ -93,10 +93,10 @@ fn frag_voxel(near: vec3f, step: vec3f) -> vec4f {
     var max = 0u;
     var i = 0u;
     for (; i < NumSteps; i++) {
-        let off = (vec3f(sin(uniforms.time.x * 0.2), 0f, 0f) + 1f) * 0.25;
+        //let off = (vec3f(sin(uniforms.time.x * 0.2), 0f, 0f) + 1f) * 0.25;
 
         let s = getVoxel(mapPos);
-        let threshold = (sin(uniforms.time.x * 0.5) + 1.0) * 0.5;
+        //let threshold = (sin(uniforms.time.x * 0.5) + 1.0) * 0.5;
         if s < 0.0 {
             count += 1u;
             if (Opaque) {
@@ -106,8 +106,11 @@ fn frag_voxel(near: vec3f, step: vec3f) -> vec4f {
         max += 1u;
 
         mask = sideDist <= min(sideDist.yzx, sideDist.zxy);
-        sideDist += vec3f(mask) * deltaDist;
-        mapPos += vec3f(mask) * rayStep;
+        // slow: x += vec3f(mask) * y 
+        // slow: x  = select(x, x + y, mask)
+        // fast: x += select(0, y, mask)
+        sideDist += select(vec3f(0.), deltaDist, mask);
+        mapPos += select(vec3f(0.), rayStep, mask);
     }
 
     if i == NumSteps {
