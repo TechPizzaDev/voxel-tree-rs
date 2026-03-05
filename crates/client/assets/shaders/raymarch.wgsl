@@ -13,7 +13,7 @@ struct VertexOutput {
 
 override Xray = false;
 override Opaque = true;
-override NumSteps: u32 = select(160u, 256u, Xray);
+override NumSteps: u32 = select(86u, 256u, Xray);
 
 @vertex
 fn vertex_main(
@@ -41,7 +41,7 @@ fn vertex_main(
     return VertexOutput(
         vec4f(xy, 0f, 1f),
         near.xyz,
-        (far.xyz - near.xyz) / f32(NumSteps)
+        (far.xyz - near.xyz)
     );
 }
 
@@ -69,43 +69,42 @@ fn getVoxel(c: vec3f) -> f32 {
 
 @fragment
 fn fragment_main(
-    @location(0) near: vec3f,
-    @location(1) step: vec3f
+    @location(0) ray_pos: vec3f,
+    @location(1) ray_dir: vec3f
 ) -> @location(0) vec4f {
-    return frag_voxel(near, step);
+    return frag_voxel(ray_pos, ray_dir);
 }
 
 fn ray_to_tex(pos: vec3f) -> vec3f {
     return (pos + 1f) * 0.5f;
 }
 
-fn frag_voxel(near: vec3f, step: vec3f) -> vec4f {
-    let rayPos = near;
-    let rayDir = step;
-
-    var mapPos = floor(rayPos);
-    let deltaDist = abs(vec3f(length(rayDir)) / rayDir);
-    let rayStep = sign(rayDir);
-    var sideDist = (sign(rayDir) * (mapPos - rayPos) + (sign(rayDir) * 0.5) + 0.5) * deltaDist;
+fn frag_voxel(ray_pos: vec3f, ray_dir: vec3f) -> vec4f {
+    
+    var mapPos = floor(ray_pos);
+    let deltaDist = length(ray_dir) / abs(ray_dir);
+    let rayStep = sign(ray_dir);
+    var sideDist = (rayStep * (mapPos - ray_pos) + (rayStep * 0.5) + 0.5) * deltaDist;
 
     var mask: vec3<bool>;
     var count = 0u;
-    var max = 0u;
+    var max_steps = 0u;
     var i = 0u;
     for (; i < NumSteps; i++) {
         //let off = (vec3f(sin(uniforms.time.x * 0.2), 0f, 0f) + 1f) * 0.25;
 
-        let s = getVoxel(mapPos);
+        let sdf = floor(getVoxel(mapPos));
         //let threshold = (sin(uniforms.time.x * 0.5) + 1.0) * 0.5;
-        if s < 0.0 {
+        if sdf < 0. {
             count += 1u;
             if (Opaque) {
                 break;
             }
         }
-        max += 1u;
+        max_steps += 1u;
 
-        mask = sideDist < min(sideDist.yzx, sideDist.zxy);
+        mask = sideDist <= min(sideDist.yzx, sideDist.zxy);
+
         // slow: x += vec3f(mask) * y 
         // slow: x  = select(x, x + y, mask)
         // fast: x += select(0, y, mask)
@@ -115,12 +114,25 @@ fn frag_voxel(near: vec3f, step: vec3f) -> vec4f {
 
     if i >= NumSteps - 1 {
         return vec4f(vec3f(
-            f32(count) / f32(max), 
+            f32(count) / f32(max_steps), 
             f32(count) / f32(NumSteps) * 1f, 
-            f32(max) / f32(NumSteps)) * 1.5f, 
+            f32(max_steps) / f32(NumSteps)) * 1.5f, 
             1f);
     }
 
-    let color = vec3f(mask) * vec3f(0.5, 1.0, 0.75);
+    let dist = length(vec3f(mask) * (sideDist - deltaDist));
+    let dst = ray_pos + normalize(ray_dir) * dist; 
+    var color = floor(dst) / f32(NumSteps) * 4.0;
+
+    //let color = vec3f(mask) * vec3f(0.5, 1.0, 0.75);
+	if (mask.x) {
+		color *= vec3f(0.5);
+	}
+	if (mask.y) {
+		color *= vec3f(1.0);
+	}
+	if (mask.z) {
+		color *= vec3f(0.75);
+	}
     return vec4f(color, 1f);
 }
