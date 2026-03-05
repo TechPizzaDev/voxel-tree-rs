@@ -36,7 +36,7 @@ fn android_main(app: AndroidApp) {
         .build()
         .unwrap();
 
-    let mut app = crate::App::default();
+    let mut app = crate::App::new(std::path::PathBuf::new());
     event_loop.run_app(&mut app).unwrap();
 }
 

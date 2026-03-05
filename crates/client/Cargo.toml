@@ -30,6 +30,8 @@ android-activity = { workspace = true, features = [ "native-activity" ] }
 android_logger.workspace = true
 
 [package.metadata.android]
+use_aapt2 = true
+
 # Specifies the package property of the manifest.
 package = "dev.techpizza.voxel_tree"
 
