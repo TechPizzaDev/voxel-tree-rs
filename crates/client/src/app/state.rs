@@ -1,4 +1,4 @@
-use std::{borrow::Cow, collections::VecDeque, sync::Arc, time::Duration};
+use std::{collections::VecDeque, fs::File, io::Read, sync::Arc, time::Duration};
 
 use bytemuck::{Pod, Zeroable};
 use egui_plot::{Plot, PlotPoint, PlotPoints};
@@ -10,7 +10,7 @@ use wgpu::{
 use winit::{event::WindowEvent, window::Window};
 
 use crate::{
-    app::FrameIndex,
+    App, FrameIndex,
     egui_tools::EguiRenderer,
     gpu::query::{QueryInfo, SubmitError},
 };
@@ -44,7 +44,7 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub(crate) async fn new(window: Arc<Window>) -> AppState {
+    pub(crate) async fn new(app: &App, window: Arc<Window>) -> AppState {
         let mut instance_desc = wgpu::InstanceDescriptor::default();
         instance_desc.flags = InstanceFlags::debugging()
             .with_env()
@@ -74,9 +74,14 @@ impl AppState {
         let surface_format = caps.formats[0];
 
         // Load the shaders from disk
+        let mut source_text = String::new();
+        File::open(app.asset_dir.join("shaders/raymarch.wgsl"))
+            .expect("failed to open shader")
+            .read_to_string(&mut source_text)
+            .expect("failed to read shader");
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: None,
-            source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(include_str!("shader.wgsl"))),
+            source: wgpu::ShaderSource::Wgsl(source_text.into()),
         });
 
         let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {

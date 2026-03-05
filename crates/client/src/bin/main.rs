@@ -1,6 +1,7 @@
-
 #[cfg(not(target_os = "android"))]
 fn main() {
+    use std::path::PathBuf;
+
     use winit::event_loop::{ControlFlow, EventLoop};
 
     // wgpu uses `log` for all of our logging, so we initialize a logger with the `env_logger` crate.
@@ -24,7 +25,13 @@ fn main() {
     // the background.
     // event_loop.set_control_flow(ControlFlow::Wait);
 
-    let mut app = client::App::default();
+    let asset_dir = std::env::var("CARGO_MANIFEST_DIR")
+        .map(PathBuf::from)
+        .or_else(|_| std::env::current_dir())
+        .unwrap()
+        .join("assets");
+
+    let mut app = client::App::new(asset_dir);
     event_loop.run_app(&mut app).unwrap();
 }
 

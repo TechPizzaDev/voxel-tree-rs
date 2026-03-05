@@ -1,7 +1,7 @@
 mod state;
 pub use state::AppState;
 
-use std::{fmt::Display, ops::AddAssign, sync::Arc};
+use std::{fmt::Display, ops::AddAssign, path::PathBuf, sync::Arc};
 
 use winit::{
     application::ApplicationHandler,
@@ -29,9 +29,17 @@ impl AddAssign<i64> for FrameIndex {
     }
 }
 
-#[derive(Default)]
 pub struct App {
+    asset_dir: PathBuf,
     state: Option<AppState>,
+}
+impl App {
+    pub fn new(asset_dir: PathBuf) -> Self {
+        Self {
+            asset_dir,
+            state: None,
+        }
+    }
 }
 
 impl ApplicationHandler for App {
@@ -42,7 +50,7 @@ impl ApplicationHandler for App {
                 .unwrap(),
         );
 
-        let state = pollster::block_on(AppState::new(window.clone()));
+        let state = pollster::block_on(AppState::new(&self, window.clone()));
         self.state = Some(state);
 
         window.request_redraw();
