@@ -105,7 +105,7 @@ fn frag_voxel(near: vec3f, step: vec3f) -> vec4f {
         }
         max += 1u;
 
-        mask = sideDist <= min(sideDist.yzx, sideDist.zxy);
+        mask = sideDist < min(sideDist.yzx, sideDist.zxy);
         // slow: x += vec3f(mask) * y 
         // slow: x  = select(x, x + y, mask)
         // fast: x += select(0, y, mask)
@@ -113,7 +113,7 @@ fn frag_voxel(near: vec3f, step: vec3f) -> vec4f {
         mapPos += select(vec3f(0.), rayStep, mask);
     }
 
-    if i == NumSteps {
+    if i >= NumSteps - 1 {
         return vec4f(vec3f(
             f32(count) / f32(max), 
             f32(count) / f32(NumSteps) * 1f, 
