@@ -5,21 +5,25 @@ use egui_plot::{Plot, PlotPoint, PlotPoints};
 use egui_wgpu::ScreenDescriptor;
 use glam::{Mat4, Vec3, Vec4};
 use wgpu::{
-    BindGroup, Buffer, BufferUsages, CommandEncoder, InstanceFlags, RenderPipeline, SurfaceError,
+    BindGroup, Buffer, BufferUsages, CommandEncoder, Extent3d, RenderPipeline, SurfaceError,
 };
 use winit::{event::WindowEvent, window::Window};
 
 use crate::{
     App, FrameIndex,
+    app::point_cloud::{Point, PointGen},
     egui_tools::EguiRenderer,
     gpu::query::{QueryInfo, SubmitError},
+    numerics::BinaryInteger,
 };
 
 #[derive(Clone, Copy, Default, Pod, Zeroable)]
 #[repr(C)]
 struct UniformData {
+    mvp_matrix: Mat4,
     inverse_mvp_matrix: Mat4,
     time: Vec4,
+    resolution: Vec4,
 }
 
 pub struct AppState {
@@ -27,6 +31,7 @@ pub struct AppState {
     device: wgpu::Device,
     queue: wgpu::Queue,
     surface: wgpu::Surface<'static>,
+    depth_texture: Option<wgpu::Texture>,
     surface_format: wgpu::TextureFormat,
     pub(crate) egui_renderer: EguiRenderer,
     scale_factor: f32,
@@ -34,7 +39,10 @@ pub struct AppState {
     query_info: Option<QueryInfo>,
     uniform_buffer: Buffer,
     bind_group: BindGroup,
-    render_pipeline: RenderPipeline,
+    raymarch_pipeline: RenderPipeline,
+    point_buffer: Option<Buffer>,
+    point_count: u32,
+    point_pipeline: RenderPipeline,
     aspect_ratio: f32,
     pub(crate) current_frame: FrameIndex,
     main_pass_time_series: VecDeque<PlotPoint>,
@@ -46,9 +54,9 @@ pub struct AppState {
 impl AppState {
     pub(crate) async fn new(app: &App, window: Arc<Window>) -> AppState {
         let mut instance_desc = wgpu::InstanceDescriptor::default();
-        instance_desc.flags = InstanceFlags::debugging()
+        instance_desc.flags = wgpu::InstanceFlags::debugging()
             .with_env()
-            .union(InstanceFlags::AUTOMATIC_TIMESTAMP_NORMALIZATION);
+            .union(wgpu::InstanceFlags::AUTOMATIC_TIMESTAMP_NORMALIZATION);
         let instance = wgpu::Instance::new(&instance_desc);
 
         let mut adapter_desc = wgpu::RequestAdapterOptions::default();
@@ -74,14 +82,23 @@ impl AppState {
         let surface_format = caps.formats[0];
 
         // Load the shaders from disk
-        let mut source_text = String::new();
-        File::open(app.asset_dir.join("shaders/raymarch.wgsl"))
-            .expect("failed to open shader")
-            .read_to_string(&mut source_text)
-            .expect("failed to read shader");
-        let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+        fn load_shader_source(app: &App, name: &str) -> String {
+            let mut source = String::new();
+            File::open(app.asset_dir.join("shaders").join(name))
+                .expect("failed to open shader")
+                .read_to_string(&mut source)
+                .expect("failed to read shader");
+            source
+        }
+
+        let raymarch_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: None,
-            source: wgpu::ShaderSource::Wgsl(source_text.into()),
+            source: wgpu::ShaderSource::Wgsl(load_shader_source(app, "raymarch.wgsl").into()),
+        });
+
+        let point_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+            label: None,
+            source: wgpu::ShaderSource::Wgsl(load_shader_source(app, "point.wgsl").into()),
         });
 
         let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
@@ -120,23 +137,59 @@ impl AppState {
             immediate_size: 0,
         });
 
-        let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+        let raymarch_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: None,
             layout: Some(&pipeline_layout),
             vertex: wgpu::VertexState {
-                module: &shader,
+                module: &raymarch_shader,
                 entry_point: Some("vertex_main"),
                 buffers: &[],
                 compilation_options: Default::default(),
             },
             fragment: Some(wgpu::FragmentState {
-                module: &shader,
+                module: &raymarch_shader,
                 entry_point: Some("fragment_main"),
                 compilation_options: Default::default(),
                 targets: &[Some(surface_format.into())],
             }),
             primitive: wgpu::PrimitiveState::default(),
             depth_stencil: None,
+            multisample: wgpu::MultisampleState::default(),
+            multiview_mask: None,
+            cache: None,
+        });
+
+        let point_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: None,
+            layout: Some(&pipeline_layout),
+            vertex: wgpu::VertexState {
+                module: &point_shader,
+                entry_point: Some("vertex_main"),
+                buffers: &[wgpu::VertexBufferLayout {
+                    array_stride: size_of::<Point>() as wgpu::BufferAddress,
+                    step_mode: wgpu::VertexStepMode::Instance,
+                    attributes: &wgpu::vertex_attr_array![
+                        0 => Float32x3,
+                        1 => Float32,
+                        2 => Uint32,
+                    ],
+                }],
+                compilation_options: Default::default(),
+            },
+            fragment: Some(wgpu::FragmentState {
+                module: &point_shader,
+                entry_point: Some("fragment_main"),
+                compilation_options: Default::default(),
+                targets: &[Some(surface_format.into())],
+            }),
+            primitive: wgpu::PrimitiveState::default(),
+            depth_stencil: Some(wgpu::DepthStencilState {
+                format: wgpu::TextureFormat::Depth32Float,
+                depth_write_enabled: true,
+                depth_compare: wgpu::CompareFunction::Less,
+                stencil: wgpu::StencilState::default(),
+                bias: wgpu::DepthBiasState::default(),
+            }),
             multisample: wgpu::MultisampleState::default(),
             multiview_mask: None,
             cache: None,
@@ -156,13 +209,18 @@ impl AppState {
             queue,
             surface,
             surface_format,
+            depth_texture: None,
             egui_renderer,
             scale_factor: 1.0,
 
             query_info,
             uniform_buffer,
             bind_group,
-            render_pipeline,
+            raymarch_pipeline,
+            point_buffer: None,
+            point_count: 0,
+            point_pipeline,
+
             aspect_ratio: 1.0,
             current_frame: 0.into(),
             main_pass_time_series: VecDeque::new(),
@@ -192,6 +250,21 @@ impl AppState {
         };
         self.surface.configure(&self.device, &surface_config);
         self.aspect_ratio = self.window_size.width as f32 / self.window_size.height as f32;
+
+        self.depth_texture = Some(self.device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("Depth Buffer"),
+            size: Extent3d {
+                width: self.window_size.width,
+                height: self.window_size.height,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Depth32Float,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            view_formats: &[],
+        }));
     }
 
     pub(crate) fn handle_event(&mut self, event: &WindowEvent) {
@@ -211,21 +284,59 @@ impl AppState {
         let proj_mat = Mat4::perspective_lh(
             (2.0 * std::f32::consts::PI) / 7.0,
             self.aspect_ratio,
-            1.0,
-            16.0,
+            0.125,
+            512.0,
         );
 
-        let view_mat = Mat4::from_translation(Vec3::new(0., 0., 24.))
-            * Mat4::from_rotation_x(std::f32::consts::PI * 0.4)
-            * Mat4::from_rotation_z(time * 0.25);
+        let view_mat = Mat4::look_at_lh(Vec3::new(0., 0., 1.5), Vec3::ZERO, Vec3::new(0., 1.,0.))
+        //    * Mat4::from_rotation_x(std::f32::consts::PI * 0.4)
+        //    * Mat4::from_rotation_z(time * 0.25)
+            * Mat4::from_rotation_y(time * 0.2)
+            * Mat4::from_rotation_x(time * 0.1);
 
-        let data = UniformData {
-            inverse_mvp_matrix: (proj_mat * view_mat).inverse(),
+        let mvp_matrix = proj_mat * view_mat;
+        let uniform_data = UniformData {
+            mvp_matrix,
+            inverse_mvp_matrix: mvp_matrix.inverse(),
             time: Vec4::zeroed().with_x(time),
+            resolution: Vec4::new(
+                self.window_size.width as f32,
+                self.window_size.height as f32,
+                0.,
+                0.,
+            ),
         };
 
+        let mut points = Vec::new();
+        super::point_cloud::PointSphere {
+            count: 1000,
+            radius: 1.,
+            point_size: 50.,
+            point_color: crate::app::point_cloud::Rgba::rgb(0, 175, 255)
+        }
+        .generate(&mut points);
+
+        let point_bytes: &[u8] = bytemuck::cast_slice(&points);
+        if self
+            .point_buffer
+            .as_ref()
+            .map(|buf| buf.size())
+            .unwrap_or(0)
+            < (point_bytes.len() as u64)
+        {
+            self.point_buffer = Some(self.device.create_buffer(&wgpu::BufferDescriptor {
+                label: None,
+                size: (point_bytes.len() as u64).round_up_to_pow_of_2(),
+                usage: BufferUsages::VERTEX | BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            }));
+        }
+        self.point_count = points.len() as u32;
         self.queue
-            .write_buffer(&self.uniform_buffer, 0, bytemuck::bytes_of(&data));
+            .write_buffer(self.point_buffer.as_ref().unwrap(), 0, point_bytes);
+
+        self.queue
+            .write_buffer(&self.uniform_buffer, 0, bytemuck::bytes_of(&uniform_data));
 
         let surface_texture = match self.surface.get_current_texture() {
             Ok(tex) => tex,
@@ -244,6 +355,12 @@ impl AppState {
                 format: Some(self.surface_format.add_srgb_suffix()),
                 ..Default::default()
             });
+
+        let depth_view = self
+            .depth_texture
+            .as_ref()
+            .unwrap()
+            .create_view(&wgpu::TextureViewDescriptor::default());
 
         let mut encoder = self.device.create_command_encoder(&Default::default());
 
@@ -273,7 +390,14 @@ impl AppState {
                     store: wgpu::StoreOp::Store,
                 },
             })],
-            depth_stencil_attachment: None,
+            depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                view: &depth_view,
+                depth_ops: Some(wgpu::Operations {
+                    load: wgpu::LoadOp::Clear(1.0),
+                    store: wgpu::StoreOp::Store,
+                }),
+                stencil_ops: None,
+            }),
             timestamp_writes,
             occlusion_query_set: None,
             multiview_mask: None,
@@ -282,8 +406,15 @@ impl AppState {
         // If you wanted to call any drawing commands, they would go here.
 
         rpass.set_bind_group(0, &self.bind_group, &[]);
-        rpass.set_pipeline(&self.render_pipeline);
-        rpass.draw(0..6, 0..1);
+
+        if let Some(point_buffer) = &self.point_buffer {
+            rpass.set_pipeline(&self.point_pipeline);
+            rpass.set_vertex_buffer(0, point_buffer.slice(..));
+            rpass.draw(0..6, 0..self.point_count);
+        } else {
+            rpass.set_pipeline(&self.raymarch_pipeline);
+            rpass.draw(0..6, 0..1);
+        }
 
         // End the renderpass.
         drop(rpass);
@@ -313,7 +444,7 @@ impl AppState {
             let ctx = self.egui_renderer.context();
 
             egui::Window::new("Frame Duration")
-                .default_open(true)
+                .default_open(false)
                 .show(ctx, |ui| {
                     ui.label(format!(
                         "Window Size: {}x{}",
@@ -348,7 +479,7 @@ impl AppState {
                         });
                 });
 
-            egui::Window::new("winit + egui + wgpu says hello!")
+            egui::Window::new("egui")
                 .resizable(true)
                 .vscroll(true)
                 .default_open(false)

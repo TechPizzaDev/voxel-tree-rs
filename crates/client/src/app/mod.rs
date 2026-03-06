@@ -1,3 +1,5 @@
+mod point_cloud;
+
 mod state;
 pub use state::AppState;
 
