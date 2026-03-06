@@ -52,14 +52,17 @@ fn fragment_main(in: VertexOutput) -> @location(0) vec4f {
     let p = in.uv;
     let color = unpack4x8unorm(in.color);
 
-    let radius = 0.5;
-    let d = sdCircle(p, radius);
+    let radius = 1.;
+    let sd = sdCircle(p, radius);
     
-    let dNorm = clamp(d / radius, -1.0, 1.0);
+    let dNorm = clamp(sd / radius, -1.0, 1.0);
     if (dNorm >= 0.0) {
         discard;
     }
+    
+    let w = fwidth(sd); // estimates how much sd changes across a pixel
+    let mask = smoothstep(w, -w, sd); // soft edge proportional to pixel size
 
     let t = -dNorm;
-    return vec4f(mix(vec3(0.), color.xyz, t), 1.0f);
+    return vec4f(mix(vec3(0.), color.xyz, t * 0.75 + 0.25), mask);
 }

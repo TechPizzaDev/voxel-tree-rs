@@ -17,6 +17,7 @@ glam = { workspace = true, features = ["bytemuck"] }
 pollster.workspace = true
 wgpu.workspace = true
 winit.workspace = true
+rand.workspace = true
 log.workspace = true
 log-panics.workspace = true
 

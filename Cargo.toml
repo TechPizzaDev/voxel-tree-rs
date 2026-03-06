@@ -16,6 +16,7 @@ glam = "0.32.0"
 pollster = "0.4"
 wgpu = "28.0.0"
 winit = "0.30.12"
+rand = "0.10.0"
 
 egui = "0.33.3"
 egui_plot = "0.34.1"

@@ -10,8 +10,11 @@ pub struct Rgba {
     pub a: u8,
 }
 impl Rgba {
+    pub const AQUA: Rgba = Self::rgb(0, 255, 255);
+    pub const MAGENTA: Rgba = Self::rgb(255, 0, 255);
+
     #[inline]
-    pub fn rgb(r: u8, g: u8, b: u8) -> Self {
+    pub const fn rgb(r: u8, g: u8, b: u8) -> Self {
         Self { r, g, b, a: 255 }
     }
 }

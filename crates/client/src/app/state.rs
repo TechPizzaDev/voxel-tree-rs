@@ -180,7 +180,22 @@ impl AppState {
                 module: &point_shader,
                 entry_point: Some("fragment_main"),
                 compilation_options: Default::default(),
-                targets: &[Some(surface_format.into())],
+                targets: &[Some(wgpu::ColorTargetState {
+                    format: surface_format,
+                    blend: Some(wgpu::BlendState {
+                        color: wgpu::BlendComponent {
+                            src_factor: wgpu::BlendFactor::SrcAlpha,
+                            dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
+                            operation: wgpu::BlendOperation::Add,
+                        },
+                        alpha: wgpu::BlendComponent {
+                            src_factor: wgpu::BlendFactor::One,
+                            dst_factor: wgpu::BlendFactor::One,
+                            operation: wgpu::BlendOperation::Max,
+                        },
+                    }),
+                    write_mask: wgpu::ColorWrites::ALL,
+                })],
             }),
             primitive: wgpu::PrimitiveState::default(),
             depth_stencil: Some(wgpu::DepthStencilState {
@@ -308,13 +323,17 @@ impl AppState {
         };
 
         let mut points = Vec::new();
-        super::point_cloud::PointSphere {
-            count: 1000,
-            radius: 1.,
-            point_size: 50.,
-            point_color: crate::app::point_cloud::Rgba::rgb(0, 175, 255)
+        if false {
+            super::point_cloud::PointSphere {
+                count: 1000,
+                radius: 1.,
+                point_size: 50.,
+                point_color: crate::app::point_cloud::Rgba::rgb(0, 175, 255),
+            }
+            .generate(&mut points);
+        } else {
+            super::space_colony::SpaceColony {}.generate(&mut points);
         }
-        .generate(&mut points);
 
         let point_bytes: &[u8] = bytemuck::cast_slice(&points);
         if self

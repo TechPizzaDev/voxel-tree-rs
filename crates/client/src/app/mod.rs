@@ -1,5 +1,7 @@
 mod point_cloud;
 
+mod space_colony;
+
 mod state;
 pub use state::AppState;
 
