@@ -38,10 +38,13 @@ fn vertex_main(
     );
     let offset = points[VertexIndex];
 
-    let clipPos = uniforms.modelViewProjectionMatrix * vec4f(in.position, 1.0);
+    let clip_pos = uniforms.modelViewProjectionMatrix * vec4(in.position, 1.0);
+
+    let ratio = uniforms.resolution.x / uniforms.resolution.y;
+    let adjusted_offset = vec2(offset.x / ratio, offset.y);
 
     var out: VertexOutput;
-    out.Position = clipPos + vec4f(offset * in.size / uniforms.resolution.xy, 0, 0);
+    out.Position = clip_pos + vec4(adjusted_offset * in.size, 0, 0);
     out.uv = offset;
     out.color = in.color;
     return out;
@@ -50,7 +53,6 @@ fn vertex_main(
 @fragment
 fn fragment_main(in: VertexOutput) -> @location(0) vec4f {
     let p = in.uv;
-    let color = unpack4x8unorm(in.color);
 
     let radius = 1.;
     let sd = sdCircle(p, radius);
@@ -59,6 +61,7 @@ fn fragment_main(in: VertexOutput) -> @location(0) vec4f {
     if (dNorm >= 0.0) {
         discard;
     }
+    let color = unpack4x8unorm(in.color);
     
     let w = fwidth(sd); // estimates how much sd changes across a pixel
     let mask = smoothstep(w, -w, sd); // soft edge proportional to pixel size

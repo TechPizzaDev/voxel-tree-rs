@@ -40,7 +40,6 @@ pub struct PointSphere {
 impl PointGen for PointSphere {
     fn generate(&self, output: &mut Vec<Point>) {
         let increment = std::f32::consts::PI * (3. - 5f32.sqrt());
-        let radius = 1.;
         let offset = 2. / (self.count as f32);
         for i in 0..self.count {
             let y = ((i as f32 * offset) - 1.) + (offset / 2.);
@@ -50,7 +49,7 @@ impl PointGen for PointSphere {
             let x = cos * r;
             let z = sin * r;
             output.push(Point {
-                position: Vec3::new(x, y, z) * radius,
+                position: Vec3::new(x, y, z) * self.radius,
                 size: self.point_size,
                 color: self.point_color
             });

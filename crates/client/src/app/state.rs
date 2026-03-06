@@ -303,11 +303,12 @@ impl AppState {
             512.0,
         );
 
-        let view_mat = Mat4::look_at_lh(Vec3::new(0., 0., 1.5), Vec3::ZERO, Vec3::new(0., 1.,0.))
+        let view_mat = Mat4::look_at_lh(Vec3::new(0., 0., 10.), Vec3::ZERO, Vec3::new(0., 1.,0.))
         //    * Mat4::from_rotation_x(std::f32::consts::PI * 0.4)
         //    * Mat4::from_rotation_z(time * 0.25)
-            * Mat4::from_rotation_y(time * 0.2)
-            * Mat4::from_rotation_x(time * 0.1);
+        //    * Mat4::from_rotation_y(time * 0.2)
+        //    * Mat4::from_rotation_x(time * 0.1)
+        ;
 
         let mvp_matrix = proj_mat * view_mat;
         let uniform_data = UniformData {
@@ -323,11 +324,12 @@ impl AppState {
         };
 
         let mut points = Vec::new();
+        // TODO: egui
         if false {
             super::point_cloud::PointSphere {
                 count: 1000,
-                radius: 1.,
-                point_size: 50.,
+                radius: 10.,
+                point_size: 1.,
                 point_color: crate::app::point_cloud::Rgba::rgb(0, 175, 255),
             }
             .generate(&mut points);
