@@ -4,6 +4,7 @@ use bytemuck::{Pod, Zeroable};
 use egui_plot::{Plot, PlotPoint, PlotPoints};
 use egui_wgpu::ScreenDescriptor;
 use glam::{Mat4, Vec3, Vec4};
+use rand::{SeedableRng, rngs::Xoshiro128PlusPlus};
 use wgpu::{
     BindGroup, Buffer, BufferUsages, CommandEncoder, Extent3d, RenderPipeline, SurfaceError,
 };
@@ -46,6 +47,8 @@ pub struct AppState {
     aspect_ratio: f32,
     pub(crate) current_frame: FrameIndex,
     main_pass_time_series: VecDeque<PlotPoint>,
+
+    colony: super::space_colony::SpaceColony,
 
     // Drop order requires us to drop window last, or we segfault.
     window: Arc<Window>,
@@ -239,6 +242,11 @@ impl AppState {
             aspect_ratio: 1.0,
             current_frame: 0.into(),
             main_pass_time_series: VecDeque::new(),
+
+            colony: super::space_colony::SpaceColony::with_rng(
+                20000,
+                &mut Xoshiro128PlusPlus::seed_from_u64(0),
+            ),
         };
 
         // Configure surface for the first time
@@ -296,6 +304,13 @@ impl AppState {
     pub(crate) fn render(&mut self) {
         let time = self.current_frame.0 as f32 / 60.0;
 
+        self.colony.grow();
+        println!(
+            "attractors: {}, nodes: {}",
+            self.colony.tree().attractors().len(),
+            self.colony.tree().nodes().len()
+        );
+
         let proj_mat = Mat4::perspective_lh(
             (2.0 * std::f32::consts::PI) / 7.0,
             self.aspect_ratio,
@@ -303,11 +318,11 @@ impl AppState {
             512.0,
         );
 
-        let view_mat = Mat4::look_at_lh(Vec3::new(0., 0., 10.), Vec3::ZERO, Vec3::new(0., 1.,0.))
+        let view_mat = Mat4::look_at_lh(Vec3::new(0., 0., -300.), Vec3::ZERO, Vec3::new(0., 1.,0.))
         //    * Mat4::from_rotation_x(std::f32::consts::PI * 0.4)
         //    * Mat4::from_rotation_z(time * 0.25)
-        //    * Mat4::from_rotation_y(time * 0.2)
-        //    * Mat4::from_rotation_x(time * 0.1)
+             * Mat4::from_rotation_y(time * 0.2 * 0.5)
+        //     * Mat4::from_rotation_x(time * 0.1)
         ;
 
         let mvp_matrix = proj_mat * view_mat;
@@ -334,7 +349,7 @@ impl AppState {
             }
             .generate(&mut points);
         } else {
-            super::space_colony::SpaceColony {}.generate(&mut points);
+            self.colony.generate(&mut points);
         }
 
         let point_bytes: &[u8] = bytemuck::cast_slice(&points);
@@ -500,15 +515,14 @@ impl AppState {
                         });
                 });
 
-            egui::Window::new("egui")
+            egui::Window::new("Control")
                 .resizable(true)
                 .vscroll(true)
                 .default_open(false)
+                .default_size(egui::Vec2::new(0., 0.))
                 .show(ctx, |ui| {
-                    ui.label("Label!");
-
-                    if ui.button("Button!").clicked() {
-                        println!("boom!")
+                    if ui.button("Grow!").clicked() {
+                        println!("{:?}", self.colony.grow());
                     }
 
                     ui.separator();

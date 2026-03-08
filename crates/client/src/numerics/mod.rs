@@ -1,3 +1,5 @@
+pub mod dist;
+
 pub trait BinaryInteger {
     fn round_up_to_pow_of_2(self) -> Self;
 
@@ -19,7 +21,7 @@ impl BinaryInteger for u32 {
     #[inline]
     fn containing_pow_of_2(self) -> u32 {
         let unsigned = if self == 0 { 1 } else { self };
-        return 32 - (unsigned - 1).leading_zeros() ;
+        32 - (unsigned - 1).leading_zeros()
     }
 }
 impl BinaryInteger for u64 {
@@ -32,7 +34,7 @@ impl BinaryInteger for u64 {
     #[inline]
     fn containing_pow_of_2(self) -> u32 {
         let unsigned = if self == 0 { 1 } else { self };
-        return 64 - (unsigned - 1).leading_zeros() ;
+        64 - (unsigned - 1).leading_zeros()
     }
 }
 impl BinaryInteger for usize {
