@@ -101,10 +101,17 @@ pub enum GrowError {
     Limited,
 }
 
+#[derive(Clone, Debug)]
+pub struct NodeRecord {
+    pub start: u32,
+    pub count: u32,
+}
+
 #[derive(Clone)]
 pub struct TreeMachine {
     attractors: Vec<Attractor>,
     nodes: Vec<Node>,
+    records: Vec<NodeRecord>,
 
     influence_radius: f32,
     kill_distance: f32,
@@ -124,6 +131,7 @@ impl TreeMachine {
         Self {
             attractors,
             nodes: vec![root],
+            records: Vec::new(),
 
             influence_radius: 20.0,
             kill_distance: 2.6,
@@ -141,6 +149,10 @@ impl TreeMachine {
 
     pub fn nodes(&self) -> &Vec<Node> {
         &self.nodes
+    }
+
+    pub fn node_records(&self) -> &Vec<NodeRecord> {
+        &self.records
     }
 
     /// In each iteration, new nodes, delimiting short branch segments,
@@ -180,6 +192,7 @@ impl TreeMachine {
             return Err(GrowError::OutOfReach);
         }
 
+        let record_start = self.nodes.len();
         self.nodes.reserve(additional_nodes);
         for i in 0..self.nodes.len() {
             let n = &self.nodes[i];
@@ -187,12 +200,18 @@ impl TreeMachine {
                 continue;
             }
 
+            // TODO: attempt to not grow backwards into parent node?
             let dir = n.grow_dir.normalize();
             let mut node = Node::from(n.point + self.distance_factor * dir);
             node.set_parent(Some(NodeIndex::try_from(i).unwrap()));
             self.nodes.push(node);
         }
+        self.records.push(NodeRecord {
+            start: u32::try_from(record_start).unwrap(),
+            count: u32::try_from(additional_nodes).unwrap(),
+        });
 
+        // TODO: mark attractors dead instead
         let nodes = &self.nodes;
         let d_k = SqDist::from_dist(self.kill_distance);
         self.attractors.retain(move |s| {
