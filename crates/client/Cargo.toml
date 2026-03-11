@@ -21,6 +21,8 @@ rand.workspace = true
 log.workspace = true
 log-panics.workspace = true
 
+oktree.workspace = true
+
 egui.workspace = true
 egui_plot.workspace = true
 egui-wgpu.workspace = true
