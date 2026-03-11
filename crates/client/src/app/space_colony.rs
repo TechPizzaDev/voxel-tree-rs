@@ -272,7 +272,7 @@ impl SpaceColony {
         let z_distr = rand::distr::Uniform::new(-100., 100.).unwrap();
 
         let mut attractors = Vec::with_capacity(count);
-        for i in 0..count {
+        for _i in 0..count {
             let x = x_distr.sample(rng);
             let y = y_distr.sample(rng);
             let z = z_distr.sample(rng);
@@ -296,7 +296,7 @@ impl PointGen for SpaceColony {
         for node in &self.tree.nodes {
             output.push(Point {
                 position: node.point.into(),
-                color: Rgba::rgb(50, 50, 50),
+                color: Rgba::new(50, 50, 50, 63),
                 size: 1.,
             });
         }
@@ -304,7 +304,7 @@ impl PointGen for SpaceColony {
         for attractor in &self.tree.attractors {
             output.push(Point {
                 position: attractor.point.into(),
-                color: Rgba::rgb(60, 180, 180),
+                color: Rgba::new(60, 180, 180, 127),
                 size: 1.,
             });
         }

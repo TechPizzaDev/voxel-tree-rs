@@ -14,6 +14,11 @@ impl Rgba {
     pub const MAGENTA: Rgba = Self::rgb(255, 0, 255);
 
     #[inline]
+    pub const fn new(r: u8, g: u8, b: u8, a: u8) -> Self {
+        Self { r, g, b, a }
+    }
+
+    #[inline]
     pub const fn rgb(r: u8, g: u8, b: u8) -> Self {
         Self { r, g, b, a: 255 }
     }
@@ -51,7 +56,7 @@ impl PointGen for PointSphere {
             output.push(Point {
                 position: Vec3::new(x, y, z) * self.radius,
                 size: self.point_size,
-                color: self.point_color
+                color: self.point_color,
             });
         }
     }

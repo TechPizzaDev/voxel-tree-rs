@@ -67,5 +67,6 @@ fn fragment_main(in: VertexOutput) -> @location(0) vec4f {
     let mask = smoothstep(w, -w, sd); // soft edge proportional to pixel size
 
     let t = -dNorm;
-    return vec4f(mix(vec3(0.), color.xyz, t * 0.75 + 0.25), mask);
+    let a = color.a * mask;
+    return mix(vec4(vec3(0.), a), vec4(color.rgb, a), t * 0.75 + 0.25);
 }
