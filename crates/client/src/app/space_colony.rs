@@ -19,20 +19,20 @@ pub type TreeId = u32;
 
 #[derive(Clone, Copy, Debug)]
 #[repr(transparent)]
-pub struct NodeIndex(NonZeroU32);
-impl NodeIndex {
+pub struct NodeId(NonZeroU32);
+impl NodeId {
     #[inline]
     pub fn get(self) -> u32 {
         self.0.get().wrapping_sub(1)
     }
 }
-impl From<NodeIndex> for usize {
+impl From<NodeId> for usize {
     #[inline]
-    fn from(value: NodeIndex) -> Self {
+    fn from(value: NodeId) -> Self {
         value.get() as usize
     }
 }
-impl TryFrom<u32> for NodeIndex {
+impl TryFrom<u32> for NodeId {
     type Error = ();
 
     #[inline]
@@ -40,11 +40,11 @@ impl TryFrom<u32> for NodeIndex {
         value
             .checked_add(1)
             .and_then(NonZero::new)
-            .map(NodeIndex)
+            .map(NodeId)
             .ok_or(())
     }
 }
-impl TryFrom<usize> for NodeIndex {
+impl TryFrom<usize> for NodeId {
     type Error = ();
 
     #[inline]
@@ -65,6 +65,7 @@ impl Attractor {
     }
 }
 impl From<Vec3A> for Attractor {
+    #[inline]
     fn from(point: Vec3A) -> Self {
         Self { point, node: None }
     }
@@ -89,14 +90,8 @@ pub struct Node {
 }
 impl Node {
     #[inline]
-    pub const fn new(x: f32, y: f32, z: f32) -> Self {
-        Self {
-            point: Vec3A::new(x, y, z),
-            parent: None,
-
-            grow_dir: Vec3A::ZERO,
-            connected_attractors: 0,
-        }
+    pub fn new(x: f32, y: f32, z: f32) -> Self {
+        Self::from(Vec3A::new(x, y, z))
     }
 
     pub fn set_parent(&mut self, parent: Option<ElementId>) -> Option<ElementId> {
@@ -104,6 +99,7 @@ impl Node {
     }
 }
 impl From<Vec3A> for Node {
+    #[inline]
     fn from(point: Vec3A) -> Self {
         Self {
             point,
@@ -235,7 +231,7 @@ impl TreeMachine {
 
             // TODO: add config to pick random node from nearby attractors
 
-            let mut sq_min_dist = SqDist::new(f32::MAX);
+            let mut sq_min_dist = SqDist::MAX;
             let mut min_node = None;
             for &node in node_buf.iter() {
                 let np = self.nodes.get_element(node).unwrap();
@@ -275,7 +271,7 @@ impl TreeMachine {
         let mut new_nodes = Vec::new();
 
         let additional_nodes = connected_nodes.len();
-        
+
         for &connected_node in connected_nodes {
             let n = self.nodes.get_element(connected_node).unwrap();
             debug_assert!(n.connected_attractors > 0);

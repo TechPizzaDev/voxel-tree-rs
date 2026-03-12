@@ -1,13 +1,15 @@
 
-#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
 pub struct SqDist(pub f32);
 
 impl SqDist {
-    pub fn new(d_squared: f32) -> Self {
+    pub const MAX: Self = Self(f32::MAX);
+
+    pub const fn new(d_squared: f32) -> Self {
         Self(d_squared)
     }
 
-    pub fn from_dist(d: f32) -> Self {
+    pub const fn from_dist(d: f32) -> Self {
         Self(d * d)
     }
 
