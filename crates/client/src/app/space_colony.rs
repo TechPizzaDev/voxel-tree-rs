@@ -1,12 +1,21 @@
 use std::num::{NonZero, NonZeroU32};
 
+use bevy_math::bounding::{Aabb3d, BoundingSphere, IntersectsVolume};
 use glam::Vec3A;
+use oktree::{
+    ElementId, Position,
+    prelude::{Aabb, TUVec3},
+    tree::Octree,
+};
 use rand::{Rng, distr::Distribution};
+use tracing::trace_span;
 
 use crate::{
     app::point_cloud::{Point, PointGen, Rgba},
-    numerics::dist::SqDist,
+    numerics::{dist::SqDist, octree::*},
 };
+
+pub type TreeId = u32;
 
 #[derive(Clone, Copy, Debug)]
 #[repr(transparent)]
@@ -47,28 +56,40 @@ impl TryFrom<usize> for NodeIndex {
 #[derive(Clone)]
 pub struct Attractor {
     point: Vec3A,
-    node: Option<NodeIndex>,
+    node: Option<ElementId>,
 }
 impl Attractor {
+    #[inline]
     pub fn new(x: f32, y: f32, z: f32) -> Self {
-        Self {
-            point: Vec3A::new(x, y, z),
-            node: None,
-        }
+        Self::from(Vec3A::new(x, y, z))
+    }
+}
+impl From<Vec3A> for Attractor {
+    fn from(point: Vec3A) -> Self {
+        Self { point, node: None }
+    }
+}
+impl Position for Attractor {
+    type U = TreeId;
+
+    #[inline]
+    fn position(&self) -> TUVec3<Self::U> {
+        vec3a_as_tuvec3(self.point)
     }
 }
 
 #[derive(Clone)]
 pub struct Node {
     point: Vec3A,
-    parent: Option<NodeIndex>,
+    parent: Option<ElementId>,
 
     // accumulation
     grow_dir: Vec3A,
     connected_attractors: u32,
 }
 impl Node {
-    pub fn new(x: f32, y: f32, z: f32) -> Self {
+    #[inline]
+    pub const fn new(x: f32, y: f32, z: f32) -> Self {
         Self {
             point: Vec3A::new(x, y, z),
             parent: None,
@@ -78,7 +99,7 @@ impl Node {
         }
     }
 
-    pub fn set_parent(&mut self, parent: Option<NodeIndex>) -> Option<NodeIndex> {
+    pub fn set_parent(&mut self, parent: Option<ElementId>) -> Option<ElementId> {
         std::mem::replace(&mut self.parent, parent)
     }
 }
@@ -91,6 +112,14 @@ impl From<Vec3A> for Node {
             grow_dir: Vec3A::ZERO,
             connected_attractors: 0,
         }
+    }
+}
+impl Position for Node {
+    type U = TreeId;
+
+    #[inline]
+    fn position(&self) -> TUVec3<Self::U> {
+        vec3a_as_tuvec3(self.point)
     }
 }
 
@@ -109,8 +138,8 @@ pub struct NodeRecord {
 
 #[derive(Clone)]
 pub struct TreeMachine {
-    attractors: Vec<Attractor>,
-    nodes: Vec<Node>,
+    attractors: Octree<TreeId, Attractor>,
+    nodes: Octree<TreeId, Node>,
     records: Vec<NodeRecord>,
 
     influence_radius: f32,
@@ -127,27 +156,27 @@ impl TreeMachine {
     ///
     /// Given the attraction points, the tree skeleton is formed in an iterative process,
     /// beginning with a single node at the base of the tree (a).
-    pub fn new(attractors: Vec<Attractor>, root: Node) -> Self {
+    pub fn new(attractors: Octree<TreeId, Attractor>, nodes: Octree<TreeId, Node>) -> Self {
         Self {
             attractors,
-            nodes: vec![root],
+            nodes,
             records: Vec::new(),
 
-            influence_radius: 20.0,
+            influence_radius: 290.0,
             kill_distance: 2.6,
             distance_factor: 2.0,
         }
     }
 
     pub fn push_node(&mut self, node: Node) {
-        self.nodes.push(node);
+        self.nodes.insert(node).unwrap();
     }
 
-    pub fn attractors(&self) -> &Vec<Attractor> {
+    pub fn attractors(&self) -> &Octree<TreeId, Attractor> {
         &self.attractors
     }
 
-    pub fn nodes(&self) -> &Vec<Node> {
+    pub fn nodes(&self) -> &Octree<TreeId, Node> {
         &self.nodes
     }
 
@@ -167,81 +196,129 @@ impl TreeMachine {
             return Err(GrowError::Empty);
         }
 
-        let max_dist = SqDist::from_dist(self.influence_radius);
-        for a in &mut self.attractors {
-            a.node = Self::closest_node(a.point.into(), max_dist, self.nodes.iter()).0;
+        let _grow = trace_span!("grow").entered();
+
+        let mut node_buf = Vec::new();
+        trace_span!("assign_nodes_to_attractors")
+            .in_scope(|| self.assign_nodes_to_attractors(&mut node_buf));
+        node_buf.clear();
+
+        trace_span!("grow_nodes_toward_attractors")
+            .in_scope(|| self.grow_nodes_toward_attractors(&mut node_buf));
+        if node_buf.is_empty() {
+            return Err(GrowError::OutOfReach);
         }
-        for n in &mut self.nodes {
+
+        let new_nodes =
+            trace_span!("create_node_branches").in_scope(|| self.create_node_branches(&node_buf));
+
+        trace_span!("kill_attractors").in_scope(|| self.kill_attractors(&new_nodes));
+
+        Ok(())
+    }
+
+    fn assign_nodes_to_attractors(&mut self, node_buf: &mut Vec<ElementId>) {
+        let max_dist = self.influence_radius;
+        let sq_max_dist = SqDist::from_dist(max_dist);
+
+        for a in self.attractors.iter_mut() {
+            let influence_sphere = BoundingSphere::new(a.point, max_dist);
+
+            self.nodes.extend_intersect_with(
+                move |aabb| {
+                    let aabb =
+                        Aabb3d::from_min_max(tuvec3_as_vec3a(aabb.min), tuvec3_as_vec3a(aabb.max));
+                    influence_sphere.intersects(&aabb)
+                },
+                node_buf,
+            );
+
+            // TODO: add config to pick random node from nearby attractors
+
+            let mut sq_min_dist = SqDist::new(f32::MAX);
+            let mut min_node = None;
+            for &node in node_buf.iter() {
+                let np = self.nodes.get_element(node).unwrap();
+                let sq_dist = SqDist::new(a.point.distance_squared(np.point));
+                if sq_dist < sq_max_dist && sq_dist < sq_min_dist {
+                    sq_min_dist = sq_dist;
+                    min_node = Some(node);
+                }
+            }
+            a.node = min_node;
+
+            node_buf.clear();
+        }
+    }
+
+    fn grow_nodes_toward_attractors(&mut self, connected_nodes: &mut Vec<ElementId>) {
+        for n in self.nodes.iter_mut() {
             n.connected_attractors = 0;
         }
 
-        let mut additional_nodes = 0usize;
-        for s in &self.attractors {
-            let Some(v) = s.node else {
+        for s in self.attractors.iter() {
+            let Some(v_id) = s.node else {
                 continue;
             };
-            let v = &mut self.nodes[usize::from(v)];
+            let v = self.nodes.get_element_mut(v_id).unwrap();
             if v.connected_attractors == 0 {
-                additional_nodes += 1;
+                connected_nodes.push(v_id);
             }
 
             v.grow_dir += (s.point - v.point).normalize();
             v.connected_attractors += 1;
         }
-        if additional_nodes == 0 {
-            return Err(GrowError::OutOfReach);
-        }
+    }
 
+    fn create_node_branches(&mut self, connected_nodes: &[ElementId]) -> Vec<ElementId> {
         let record_start = self.nodes.len();
-        self.nodes.reserve(additional_nodes);
-        for i in 0..self.nodes.len() {
-            let n = &self.nodes[i];
-            if n.connected_attractors <= 0 {
-                continue;
-            }
+        let mut new_nodes = Vec::new();
+
+        let additional_nodes = connected_nodes.len();
+        
+        for &connected_node in connected_nodes {
+            let n = self.nodes.get_element(connected_node).unwrap();
+            debug_assert!(n.connected_attractors > 0);
 
             // TODO: attempt to not grow backwards into parent node?
             let dir = n.grow_dir.normalize();
             let mut node = Node::from(n.point + self.distance_factor * dir);
-            node.set_parent(Some(NodeIndex::try_from(i).unwrap()));
-            self.nodes.push(node);
+            node.set_parent(Some(connected_node));
+
+            match self.nodes.insert(node) {
+                Ok(id) => new_nodes.push(id),
+                Err(err) => (), // TODO
+            }
         }
         self.records.push(NodeRecord {
             start: u32::try_from(record_start).unwrap(),
             count: u32::try_from(additional_nodes).unwrap(),
         });
 
-        // TODO: mark attractors dead instead
-        let nodes = &self.nodes;
-        let d_k = SqDist::from_dist(self.kill_distance);
-        self.attractors.retain(move |s| {
-            let s = s.point;
-            for v in nodes {
-                if SqDist::new(s.distance_squared(v.point)) < d_k {
-                    return false;
-                }
-            }
-            true
-        });
-
-        Ok(())
+        new_nodes
     }
 
-    fn closest_node<'a>(
-        point: Vec3A,
-        max_dist: SqDist,
-        nodes: impl Iterator<Item = &'a Node>,
-    ) -> (Option<NodeIndex>, SqDist) {
-        let mut min_dist = SqDist::new(f32::MAX);
-        let mut min_node = None;
-        for (i, node) in nodes.enumerate() {
-            let dist = SqDist::new(point.distance_squared(node.point.into()));
-            if dist < max_dist && dist < min_dist {
-                min_dist = dist;
-                min_node = Some(NodeIndex::try_from(i).unwrap());
+    fn kill_attractors(&mut self, nodes: &[ElementId]) {
+        let d_k = self.kill_distance;
+        let mut attractor_buf = Vec::new();
+
+        for &node in nodes {
+            let v = self.nodes.get_element(node).unwrap().point;
+            let kill_sphere = BoundingSphere::new(v, d_k);
+
+            self.attractors.extend_intersect_with(
+                move |aabb| {
+                    let aabb =
+                        Aabb3d::from_min_max(tuvec3_as_vec3a(aabb.min), tuvec3_as_vec3a(aabb.max));
+                    kill_sphere.intersects(&aabb)
+                },
+                &mut attractor_buf,
+            );
+            for &found in &attractor_buf {
+                self.attractors.remove(found).unwrap();
             }
+            attractor_buf.clear();
         }
-        (min_node, min_dist)
     }
 
     /// The resulting tree skeleton may be further manipulated.
@@ -270,14 +347,21 @@ pub struct SpaceColony {
 }
 impl SpaceColony {
     pub fn new_demo() -> Self {
-        let attractors = vec![
-            Attractor::new(0.3, 3., 0.),
-            Attractor::new(-1.5, 1., 0.),
-            Attractor::new(2., -0.3, 0.),
-            Attractor::new(-2., -3., 0.),
+        let points = [
+            Vec3A::new(0.3, 3., 0.),
+            Vec3A::new(-1.5, 1., 0.),
+            Vec3A::new(2., -0.3, 0.),
+            Vec3A::new(-2., -3., 0.),
         ];
+        let mut attractors = Octree::with_capacity(4);
+        for p in points {
+            attractors.insert(Attractor::from(p)).unwrap();
+        }
 
-        let mut tree = TreeMachine::new(attractors, Node::new(0., 0., 0.));
+        let mut nodes = Octree::with_capacity(1);
+        nodes.insert(Node::new(0., 0., 0.)).unwrap();
+
+        let mut tree = TreeMachine::new(attractors, nodes);
         for i in 1..6 {
             tree.push_node(Node::new(0., -i as f32, 0.));
         }
@@ -286,19 +370,26 @@ impl SpaceColony {
     }
 
     pub fn with_rng(count: usize, rng: &mut impl Rng) -> Self {
-        let x_distr = rand::distr::Uniform::new(-100., 100.).unwrap();
-        let y_distr = rand::distr::Uniform::new(-100., 200.).unwrap();
-        let z_distr = rand::distr::Uniform::new(-100., 100.).unwrap();
+        let x_distr = rand::distr::Uniform::new(0., 200.).unwrap();
+        let y_distr = rand::distr::Uniform::new(0., 300.).unwrap();
+        let z_distr = rand::distr::Uniform::new(0., 200.).unwrap();
 
-        let mut attractors = Vec::with_capacity(count);
+        let aabb = Aabb::from_min_max(TUVec3::splat(0), TUVec3::splat(512));
+
+        let mut attractors = Octree::from_aabb_with_capacity(aabb, count);
         for _i in 0..count {
             let x = x_distr.sample(rng);
             let y = y_distr.sample(rng);
             let z = z_distr.sample(rng);
-            attractors.push(Attractor::new(x, y, z));
+            let a = Attractor::new(x, y, z);
+            let key = vec3a_as_tuvec3(a.point);
+            attractors.entry(key).or_insert(a);
         }
 
-        let tree = TreeMachine::new(attractors, Node::new(0., -100., 0.));
+        let mut nodes = Octree::from_aabb_with_capacity(aabb, 1);
+        nodes.insert(Node::new(0., 0., 0.)).unwrap();
+
+        let tree = TreeMachine::new(attractors, nodes);
         Self { tree }
     }
 
@@ -312,15 +403,15 @@ impl SpaceColony {
 }
 impl PointGen for SpaceColony {
     fn generate(&self, output: &mut Vec<Point>) {
-        for node in &self.tree.nodes {
+        for node in self.tree.nodes.iter() {
             output.push(Point {
                 position: node.point.into(),
-                color: Rgba::new(50, 50, 50, 63),
+                color: Rgba::new(50, 50, 50, 127),
                 size: 1.,
             });
         }
 
-        for attractor in &self.tree.attractors {
+        for attractor in self.tree.attractors.iter() {
             output.push(Point {
                 position: attractor.point.into(),
                 color: Rgba::new(60, 180, 180, 127),

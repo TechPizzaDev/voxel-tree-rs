@@ -13,7 +13,8 @@ name = "client-bin"
 [dependencies]
 bytemuck.workspace = true
 env_logger.workspace = true
-glam = { workspace = true, features = ["bytemuck"] }
+glam.workspace = true
+num.workspace = true
 pollster.workspace = true
 wgpu.workspace = true
 winit.workspace = true
@@ -21,7 +22,11 @@ rand.workspace = true
 log.workspace = true
 log-panics.workspace = true
 
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+
 oktree.workspace = true
+bevy_math.workspace = true
 
 egui.workspace = true
 egui_plot.workspace = true

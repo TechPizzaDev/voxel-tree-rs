@@ -9,14 +9,22 @@ edition = "2024"
 [profile.dev.package."*"]
 opt-level = 3
 
+[profile.release]
+debug = "full"
+
 [workspace.dependencies]
+bevy_math = { version = ">=0.9" }
 bytemuck = "1.25.0"
 env_logger = "0.11"
-glam = "0.32.0"
+glam = { version = "0.30", features = ["bytemuck"] }
+num = { version = "0.4", default-features = false }
 pollster = "0.4"
 wgpu = "28.0"
 winit = "0.30.12"
 rand = "0.10"
+
+tracing = "0.1"
+tracing-subscriber = "0.3"
 
 oktree.path = "crates/oktree"
 

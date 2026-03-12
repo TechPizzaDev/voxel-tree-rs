@@ -1,4 +1,10 @@
-use std::{collections::VecDeque, fs::File, io::Read, sync::Arc, time::Duration};
+use std::{
+    collections::VecDeque,
+    fs::File,
+    io::Read,
+    sync::Arc,
+    time::{Duration, Instant},
+};
 
 use bytemuck::{Pod, Zeroable};
 use egui_plot::{Plot, PlotPoint, PlotPoints};
@@ -304,11 +310,15 @@ impl AppState {
     pub(crate) fn render(&mut self) {
         let time = self.current_frame.0 as f32 / 60.0;
 
+        let start = Instant::now();
         self.colony.grow();
+        let end = Instant::now().duration_since(start);
+
         println!(
-            "attractors: {}, nodes: {}",
+            "attractors: {}, nodes: {}, time: {:?}",
             self.colony.tree().attractors().len(),
-            self.colony.tree().nodes().len()
+            self.colony.tree().nodes().len(),
+            end
         );
 
         let proj_mat = Mat4::perspective_lh(
@@ -318,7 +328,7 @@ impl AppState {
             512.0,
         );
 
-        let view_mat = Mat4::look_at_lh(Vec3::new(0., 0., -300.), Vec3::ZERO, Vec3::new(0., 1.,0.))
+        let view_mat = Mat4::look_at_lh(Vec3::new(0., 0., -300.), Vec3::new(150., 150., 150.), Vec3::new(0., 1.,0.))
         //    * Mat4::from_rotation_x(std::f32::consts::PI * 0.4)
         //    * Mat4::from_rotation_z(time * 0.25)
              * Mat4::from_rotation_y(time * 0.2 * 0.5)
