@@ -13,7 +13,7 @@ name = "client-bin"
 [dependencies]
 bytemuck.workspace = true
 env_logger.workspace = true
-glam.workspace = true
+glam = { workspace = true, features = ["core-simd"] }
 num.workspace = true
 pollster.workspace = true
 wgpu.workspace = true
