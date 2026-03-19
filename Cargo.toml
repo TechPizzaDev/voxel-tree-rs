@@ -31,7 +31,6 @@ smallvec = { version = "1.13", features = ["const_generics"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"
 
-oktree.path = "crates/oktree"
 bvh.path = "crates/bvh"
 
 egui = "0.33.3"

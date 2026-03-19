@@ -1,3 +1,0 @@
-[submodule "crates/oktree"]
-	path = crates/oktree
-	url = https://github.com/TechPizzaDev/oktree-rs
