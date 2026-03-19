@@ -1,0 +1,11 @@
+[package]
+name = "bvh"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+foldhash.workspace = true
+num.workspace = true
+
+hashbrown.workspace = true
+smallvec.workspace = true
