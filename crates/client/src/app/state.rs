@@ -55,6 +55,7 @@ pub struct AppState {
     main_pass_time_series: VecDeque<PlotPoint>,
 
     colony: super::space_colony::SpaceColony,
+    grow_time: Duration,
 
     // Drop order requires us to drop window last, or we segfault.
     window: Arc<Window>,
@@ -253,6 +254,7 @@ impl AppState {
                 20000,
                 &mut Xoshiro128PlusPlus::seed_from_u64(0),
             ),
+            grow_time: Duration::ZERO,
         };
 
         // Configure surface for the first time
@@ -311,14 +313,17 @@ impl AppState {
         let time = self.current_frame.0 as f32 / 60.0;
 
         let start = Instant::now();
-        self.colony.grow();
-        let end = Instant::now().duration_since(start);
+        let grow_result = self.colony.grow();
+        let grow_dur = Instant::now().duration_since(start);
+        self.grow_time += grow_dur;
 
         println!(
-            "attractors: {}, nodes: {}, time: {:?}",
+            "{:?} = attractors: {}, nodes: {}, time: {:?}, total: {:?}",
+            grow_result,
             self.colony.tree().attractors().len(),
             self.colony.tree().nodes().len(),
-            end
+            grow_dur,
+            self.grow_time
         );
 
         let proj_mat = Mat4::perspective_lh(
