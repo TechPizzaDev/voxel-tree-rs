@@ -25,8 +25,11 @@ log-panics.workspace = true
 tracing.workspace = true
 tracing-subscriber = { workspace = true, features = ["env-filter"] }
 
-oktree.workspace = true
 bevy_math.workspace = true
+bvh.workspace = true
+
+foldhash.workspace = true
+hashbrown.workspace = true
 
 egui.workspace = true
 egui_plot.workspace = true
