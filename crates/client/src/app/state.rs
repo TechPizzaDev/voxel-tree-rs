@@ -11,9 +11,7 @@ use egui_plot::{Plot, PlotPoint, PlotPoints};
 use egui_wgpu::ScreenDescriptor;
 use glam::{Mat4, Vec3, Vec4};
 use rand::{SeedableRng, rngs::Xoshiro128PlusPlus};
-use wgpu::{
-    BindGroup, Buffer, BufferUsages, CommandEncoder, Extent3d, RenderPipeline, SurfaceError,
-};
+use wgpu::{BindGroup, Buffer, BufferUsages, CommandEncoder, Extent3d, RenderPipeline};
 use winit::{event::WindowEvent, window::Window};
 
 use crate::{
@@ -62,12 +60,16 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub(crate) async fn new(app: &App, window: Arc<Window>) -> AppState {
-        let mut instance_desc = wgpu::InstanceDescriptor::default();
+    pub(crate) async fn new(
+        app: &App,
+        window: Arc<Window>,
+        display: Box<dyn wgpu::wgt::WgpuHasDisplayHandle>,
+    ) -> AppState {
+        let mut instance_desc = wgpu::InstanceDescriptor::new_with_display_handle(display);
         instance_desc.flags = wgpu::InstanceFlags::debugging()
             .with_env()
             .union(wgpu::InstanceFlags::AUTOMATIC_TIMESTAMP_NORMALIZATION);
-        let instance = wgpu::Instance::new(&instance_desc);
+        let instance = wgpu::Instance::new(instance_desc);
 
         let mut adapter_desc = wgpu::RequestAdapterOptions::default();
         adapter_desc.power_preference = wgpu::PowerPreference::HighPerformance;
@@ -143,7 +145,7 @@ impl AppState {
 
         let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
             label: None,
-            bind_group_layouts: &[&bind_group_layout],
+            bind_group_layouts: &[Some(&bind_group_layout)],
             immediate_size: 0,
         });
 
@@ -210,8 +212,8 @@ impl AppState {
             primitive: wgpu::PrimitiveState::default(),
             depth_stencil: Some(wgpu::DepthStencilState {
                 format: wgpu::TextureFormat::Depth32Float,
-                depth_write_enabled: true,
-                depth_compare: wgpu::CompareFunction::Less,
+                depth_write_enabled: Some(true),
+                depth_compare: Some(wgpu::CompareFunction::Less),
                 stencil: wgpu::StencilState::default(),
                 bias: wgpu::DepthBiasState::default(),
             }),
@@ -390,13 +392,13 @@ impl AppState {
             .write_buffer(&self.uniform_buffer, 0, bytemuck::bytes_of(&uniform_data));
 
         let surface_texture = match self.surface.get_current_texture() {
-            Ok(tex) => tex,
-            Err(SurfaceError::Outdated) => {
+            wgpu::CurrentSurfaceTexture::Success(tex) => tex,
+            wgpu::CurrentSurfaceTexture::Outdated => {
                 // Ignoring outdated to allow resizing and minimization
                 println!("wgpu surface outdated");
                 return;
             }
-            Err(err) => panic!("failed to acquire next swapchain texture: {}", err),
+            err => panic!("failed to acquire next swapchain texture: {:?}", err),
         };
         let surface_view = surface_texture
             .texture

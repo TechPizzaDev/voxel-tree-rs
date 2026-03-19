@@ -54,7 +54,8 @@ impl ApplicationHandler for App {
                 .unwrap(),
         );
 
-        let state = pollster::block_on(AppState::new(&self, window.clone()));
+        let display = Box::new(event_loop.owned_display_handle());
+        let state = pollster::block_on(AppState::new(&self, window.clone(), display));
         self.state = Some(state);
 
         window.request_redraw();

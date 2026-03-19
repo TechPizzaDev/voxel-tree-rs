@@ -169,7 +169,7 @@ impl RenderState {
     /// # Errors
     /// Wgpu initialization may fail due to incompatible hardware or driver for a given config.
     pub async fn create(
-        config: &WgpuConfiguration,
+        config: WgpuConfiguration,
         instance: &wgpu::Instance,
         compatible_surface: Option<&wgpu::Surface<'static>>,
         options: RendererOptions,
@@ -185,11 +185,10 @@ impl RenderState {
                 wgpu::Backends::all()
             };
 
-            instance.enumerate_adapters(backends)
-        }
-        .await;
+            instance.enumerate_adapters(backends).await
+        };
 
-        let (adapter, device, queue) = match config.wgpu_setup.clone() {
+        let (adapter, device, queue) = match config.wgpu_setup {
             WgpuSetup::CreateNew(WgpuSetupCreateNew {
                 instance_descriptor: _,
                 power_preference,
@@ -283,7 +282,6 @@ pub enum SurfaceErrorAction {
 }
 
 /// Configuration for using wgpu with eframe or the egui-wgpu winit feature.
-#[derive(Clone)]
 pub struct WgpuConfiguration {
     /// Present mode used for the primary surface.
     pub present_mode: wgpu::PresentMode,
@@ -301,7 +299,7 @@ pub struct WgpuConfiguration {
     pub wgpu_setup: WgpuSetup,
 
     /// Callback for surface errors.
-    pub on_surface_error: Arc<dyn Fn(wgpu::SurfaceError) -> SurfaceErrorAction + Send + Sync>,
+    pub on_surface_error: Arc<dyn Fn(wgpu::CurrentSurfaceTexture) -> SurfaceErrorAction + Send + Sync>,
 }
 
 #[test]
@@ -336,12 +334,12 @@ impl Default for WgpuConfiguration {
             desired_maximum_frame_latency: None,
             wgpu_setup: Default::default(),
             on_surface_error: Arc::new(|err| {
-                if err == wgpu::SurfaceError::Outdated {
+                if matches!(err, wgpu::CurrentSurfaceTexture::Outdated) {
                     // This error occurs when the app is minimized on Windows.
                     // Silently return here to prevent spamming the console with:
                     // "The underlying surface has changed, and therefore the swap chain must be updated"
                 } else {
-                    log::warn!("Dropped frame with error: {err}");
+                    log::warn!("Dropped frame with error: {err:?}");
                 }
                 SurfaceErrorAction::SkipFrame
             }),
@@ -433,6 +431,13 @@ pub fn adapter_info_summary(info: &wgpu::AdapterInfo) -> String {
     if *device != 0 {
         summary += &format!(", device: 0x{device:02X}");
     }
+    if !device_pci_bus_id.is_empty() {
+        summary += &format!(", pci_bus_id: {device_pci_bus_id:?}");
+    }
+    if *subgroup_min_size != 0 || *subgroup_max_size != 0 {
+        summary += &format!(", subgroup_size: {subgroup_min_size}..={subgroup_max_size}");
+    }
+    summary += &format!(", transient_saves_memory: {transient_saves_memory}");
 
     summary
 }

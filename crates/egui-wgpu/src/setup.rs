@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-#[derive(Clone)]
 pub enum WgpuSetup {
     /// Construct a wgpu setup using some predefined settings & heuristics.
     /// This is the default option. You can customize most behaviours overriding the
@@ -45,7 +44,7 @@ impl WgpuSetup {
     ///
     /// Does *not* store the wgpu instance, so calling this repeatedly may
     /// create a new instance every time!
-    pub async fn new_instance(&self) -> wgpu::Instance {
+    pub async fn new_instance(self) -> wgpu::Instance {
         match self {
             Self::CreateNew(create_new) => {
                 #[allow(clippy::allow_attributes, unused_mut)]
@@ -65,8 +64,7 @@ impl WgpuSetup {
                 }
 
                 log::debug!("Creating wgpu instance with backends {backends:?}");
-                wgpu::util::new_instance_with_webgpu_detection(&create_new.instance_descriptor)
-                    .await
+                wgpu::util::new_instance_with_webgpu_detection(create_new.instance_descriptor).await
             }
             Self::Existing(existing) => existing.instance.clone(),
         }
@@ -128,17 +126,6 @@ pub struct WgpuSetupCreateNew {
         Arc<dyn Fn(&wgpu::Adapter) -> wgpu::DeviceDescriptor<'static> + Send + Sync>,
 }
 
-impl Clone for WgpuSetupCreateNew {
-    fn clone(&self) -> Self {
-        Self {
-            instance_descriptor: self.instance_descriptor.clone(),
-            power_preference: self.power_preference,
-            native_adapter_selector: self.native_adapter_selector.clone(),
-            device_descriptor: Arc::clone(&self.device_descriptor),
-        }
-    }
-}
-
 impl std::fmt::Debug for WgpuSetupCreateNew {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("WgpuSetupCreateNew")
@@ -163,6 +150,7 @@ impl Default for WgpuSetupCreateNew {
                 flags: wgpu::InstanceFlags::from_build_config().with_env(),
                 backend_options: wgpu::BackendOptions::from_env_or_default(),
                 memory_budget_thresholds: wgpu::MemoryBudgetThresholds::default(),
+                display: None,
             },
 
             power_preference: wgpu::PowerPreference::from_env()
