@@ -2,6 +2,8 @@ pub mod dist;
 
 pub mod octree;
 
+pub mod rstar;
+
 pub mod spatial;
 
 pub trait BinaryInteger {

@@ -27,6 +27,7 @@ tracing-subscriber = { workspace = true, features = ["env-filter"] }
 
 bevy_math.workspace = true
 bvh.workspace = true
+rstar.workspace = true
 
 foldhash.workspace = true
 hashbrown.workspace = true

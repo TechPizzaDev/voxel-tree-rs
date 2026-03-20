@@ -12,6 +12,7 @@ pub use id::{LeafId, NodeId};
 pub mod numerics;
 
 mod pool;
+pub use pool::Pool;
 
 mod volume_hash;
 pub use volume_hash::{Bucket, VolId, Volume, VolumeHash, ZeroHasher};

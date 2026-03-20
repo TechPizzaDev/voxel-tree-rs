@@ -3,17 +3,18 @@ use std::{
     time::{Duration, Instant},
 };
 
-use bvh::{VolId, Volume, VolumeHash, ZeroHasher};
+use bvh::{Pool, Volume};
 use bytemuck::Zeroable;
-use glam::Vec3A;
-use hashbrown::HashSet;
+use glam::{Vec3, Vec3A};
 use rand::{Rng, distr::Distribution};
+use rstar::{AABB, PointDistance, RTree, RTreeObject, primitives::GeomWithData};
 use tracing::trace_span;
 
 use crate::{
     app::point_cloud::{Point, PointGen, Rgba},
     numerics::{
         dist::SqDist,
+        rstar::{RPoint, RSphere},
         spatial::{SpatialKey, Sphere, SphereSpatialKeys},
     },
 };
@@ -67,6 +68,11 @@ impl Attractor {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self::from(Vec3A::new(x, y, z))
     }
+
+    #[inline]
+    pub fn influence_sphere(&self) -> Sphere {
+        Sphere::new(self.point, self.influence)
+    }
 }
 impl From<Vec3A> for Attractor {
     #[inline]
@@ -86,7 +92,7 @@ impl Volume for Attractor {
     type Iter = SphereSpatialKeys<A_R>;
 
     fn keys(&self) -> Self::Iter {
-        Sphere::new(self.point, self.influence).keys()
+        self.influence_sphere().keys()
     }
 }
 
@@ -118,6 +124,7 @@ impl Node {
         Self::from(Vec3A::new(x, y, z))
     }
 
+    #[inline]
     pub fn set_parent(&mut self, parent: Option<NodeId>) -> Option<NodeId> {
         std::mem::replace(&mut self.parent, parent)
     }
@@ -135,6 +142,58 @@ impl From<Vec3A> for Node {
     }
 }
 
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct NodePoint {
+    point: Vec3,
+    id: NodeId,
+}
+impl NodePoint {
+    #[inline]
+    pub fn new(point: Vec3, id: NodeId) -> Self {
+        NodePoint { point, id }
+    }
+
+    #[inline]
+    pub fn center(&self) -> Vec3A {
+        let v: std::simd::f32x4 = unsafe { std::mem::transmute(*self) };
+        Vec3A::from(v)
+    }
+
+    #[inline]
+    pub fn id(&self) -> NodeId {
+        self.id
+    }
+}
+impl RTreeObject for NodePoint {
+    type Envelope = AABB<RPoint>;
+
+    #[inline]
+    fn envelope(&self) -> Self::Envelope {
+        AABB::from_point(self.center().into())
+    }
+}
+impl PointDistance for NodePoint {
+    #[inline]
+    fn distance_2(&self, point: &RPoint) -> f32 {
+        self.center().distance_squared(point.0)
+    }
+
+    #[inline]
+    fn contains_point(&self, point: &RPoint) -> bool {
+        self.center() == point.0
+    }
+
+    #[inline]
+    fn distance_2_if_less_or_equal(&self, point: &RPoint, max_distance_2: f32) -> Option<f32> {
+        let distance_2 = self.distance_2(point);
+        if distance_2 <= max_distance_2 {
+            return Some(distance_2);
+        }
+        None
+    }
+}
+
 #[derive(Debug)]
 pub enum GrowError {
     Empty,
@@ -147,10 +206,29 @@ pub struct NodeRecord {
     pub start: u32,
     pub count: u32,
 }
+impl NodeRecord {
+    #[inline]
+    pub fn iter(&self) -> impl Iterator<Item = NodeId> {
+        (self.start..(self.start + self.count)).map(|i| NodeId::try_from(i).unwrap())
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Default)]
+pub struct AttractorTreeParams;
+
+impl rstar::RTreeParams for AttractorTreeParams {
+    const MIN_SIZE: usize = 32;
+    const MAX_SIZE: usize = 128;
+    const REINSERTION_COUNT: usize = 16;
+    type DefaultInsertionStrategy = rstar::RStarInsertionStrategy;
+}
 
 pub struct TreeMachine {
-    attractors: VolumeHash<SpatialKey<A_R>, Attractor>,
+    attractors: Pool<Attractor>,
+    attractor_tree: RTree<GeomWithData<RSphere, u32>, AttractorTreeParams>,
+
     nodes: Vec<Node>,
+    node_tree: RTree<NodePoint>,
     records: Vec<NodeRecord>,
 
     kill_distance: f32,
@@ -166,10 +244,31 @@ impl TreeMachine {
     ///
     /// Given the attraction points, the tree skeleton is formed in an iterative process,
     /// beginning with a single node at the base of the tree (a).
-    pub fn new(attractors: VolumeHash<SpatialKey<A_R>, Attractor>, nodes: Vec<Node>) -> Self {
+    pub fn new(attractors: Pool<Attractor>, nodes: Vec<Node>) -> Self {
+        let node_tree = RTree::bulk_load(
+            nodes
+                .iter()
+                .enumerate()
+                .map(|(i, node)| NodePoint::new(node.point.into(), NodeId::try_from(i).unwrap()))
+                .collect(),
+        );
+
+        let attractor_tree = RTree::bulk_load_with_params(
+            attractors
+                .iter()
+                .enumerate()
+                .map(|(i, attr)| {
+                    GeomWithData::new(attr.influence_sphere().into(), u32::try_from(i).unwrap())
+                })
+                .collect(),
+        );
+
         Self {
             attractors,
+            attractor_tree,
+
             nodes,
+            node_tree,
             records: Vec::new(),
 
             kill_distance: 9.6,
@@ -177,11 +276,15 @@ impl TreeMachine {
         }
     }
 
-    pub fn push_node(&mut self, node: Node) {
+    pub fn push_node(&mut self, node: Node) -> NodeId {
+        let id = NodeId::try_from(self.nodes.len()).unwrap();
+        let point = node.point.into();
         self.nodes.push(node);
+        self.node_tree.insert(NodePoint::new(point, id));
+        id
     }
 
-    pub fn attractors(&self) -> &VolumeHash<SpatialKey<A_R>, Attractor> {
+    pub fn attractors(&self) -> &Pool<Attractor> {
         &self.attractors
     }
 
@@ -228,7 +331,7 @@ impl TreeMachine {
             trace_span!("create_node_branches").in_scope(|| self.create_node_branches(&node_buf));
 
         let span = trace_span!("kill_attractors", count = Empty);
-        let kill_count = span.in_scope(|| self.kill_attractors(&new_nodes));
+        let kill_count = span.in_scope(|| self.kill_attractors(new_nodes));
         span.record("count", kill_count);
         drop(span);
 
@@ -236,31 +339,18 @@ impl TreeMachine {
     }
 
     fn assign_nodes_to_attractors(&mut self) {
-        let mut a_set: HashSet<VolId, ZeroHasher> = HashSet::default();
-
-        for node_id in 0..self.nodes.len() {
-            let node = &self.nodes[node_id];
-            let node_id = NodeId::try_from(node_id).unwrap();
-
-            // find potential attractors
-            for a_bucket in self
-                .attractors
-                .buckets_in_volume(&Sphere::new(node.point, 0.))
-            {
-                a_set.extend(a_bucket.items());
-            }
+        for a in self.attractors.iter_mut() {
+            let influence_2 = a.influence * a.influence;
 
             // TODO: add config to pick random node from nearby attractors
 
-            for a in a_set.drain() {
-                let Some(a) = self.attractors.get_mut(a) else {
-                    continue;
-                };
-                let dist = SqDist::new(Vec3A::distance_squared(a.point, node.point));
-                if dist <= a.node_dist {
-                    a.node_dist = dist;
-                    a.node = Some(node_id);
-                }
+            if let Some((geo, dist_2)) = self
+                .node_tree
+                .nearest_neighbor_in_range(a.point.into(), influence_2)
+            {
+                debug_assert_eq!(dist_2, geo.center().distance_squared(a.point));
+                debug_assert!(dist_2 <= influence_2);
+                a.node = Some(geo.id());
             }
         }
     }
@@ -268,7 +358,7 @@ impl TreeMachine {
     fn grow_nodes_toward_attractors(&mut self, connected_nodes: &mut Vec<NodeId>) {
         // TODO: only iterate attractors near nodes (based on attr:node ratio)?
 
-        for s in self.attractors.values_mut() {
+        for s in self.attractors.iter_mut() {
             let Some(v_id) = s.node else {
                 continue;
             };
@@ -282,9 +372,8 @@ impl TreeMachine {
         }
     }
 
-    fn create_node_branches(&mut self, connected_nodes: &[NodeId]) -> Vec<NodeId> {
+    fn create_node_branches(&mut self, connected_nodes: &[NodeId]) -> NodeRecord {
         let record_start = self.nodes.len();
-        let mut new_nodes = Vec::with_capacity(connected_nodes.len());
 
         let additional_nodes = connected_nodes.len();
 
@@ -301,38 +390,36 @@ impl TreeMachine {
             n.grow_dir = Vec3A::zeroed();
             n.connected_attractors = 0;
 
-            let id = NodeId::try_from(self.nodes.len()).unwrap();
-            self.nodes.push(child);
-            new_nodes.push(id);
+            self.push_node(child);
         }
-        self.records.push(NodeRecord {
+
+        let record = NodeRecord {
             start: u32::try_from(record_start).unwrap(),
             count: u32::try_from(additional_nodes).unwrap(),
-        });
-
-        new_nodes
+        };
+        self.records.push(record.clone());
+        record
     }
 
-    fn kill_attractors(&mut self, nodes: &[NodeId]) -> usize {
+    fn kill_attractors(&mut self, nodes: NodeRecord) -> usize {
         let d_k = self.kill_distance;
 
-        let mut a_set: HashSet<VolId, ZeroHasher> = HashSet::default();
         let mut counter = 0;
 
-        for &node in nodes {
+        for node in nodes.iter() {
             let v = self.nodes[usize::from(node)].point;
             let kill_sphere = Sphere::new(v, d_k);
 
-            // find potential attractors
-            a_set.extend(self.attractors.items_in_volume(&kill_sphere));
-
-            for a_id in a_set.drain() {
-                if let Some(a) = self.attractors.get(a_id) {
-                    if kill_sphere.contains_point(a.point) {
-                        self.attractors.remove(a_id).unwrap();
-                        counter += 1;
-                    }
-                }
+            for geo in self
+                .attractor_tree
+                .drain_with_selection_function(KillFunction {
+                    sphere: kill_sphere,
+                })
+            {
+                let a = self.attractors.remove(geo.data as usize).unwrap();
+                let dist = a.point.distance_squared(v);
+                debug_assert!(dist <= (d_k * d_k), "dist = {}, d_k = {}", dist, d_k * d_k);
+                counter += 1;
             }
         }
         counter
@@ -359,6 +446,21 @@ impl TreeMachine {
     }
 }
 
+pub struct KillFunction {
+    sphere: Sphere,
+}
+impl rstar::SelectionFunction<GeomWithData<RSphere, u32>> for KillFunction {
+    fn should_unpack_parent(&self, parent_envelope: &AABB<RPoint>) -> bool {
+        let envelope_dist_2 = parent_envelope.distance_2(&self.sphere.center().into());
+        let r = self.sphere.radius();
+        envelope_dist_2 <= (r * r)
+    }
+
+    fn should_unpack_leaf(&self, leaf: &GeomWithData<RSphere, u32>) -> bool {
+        self.sphere.contains_point(leaf.geom().0.center())
+    }
+}
+
 pub struct SpaceColony {
     tree: TreeMachine,
 }
@@ -370,12 +472,12 @@ impl SpaceColony {
             Vec3A::new(2., -0.3, 0.),
             Vec3A::new(-2., -3., 0.),
         ];
-        let mut attractors: VolumeHash<SpatialKey<A_R>, Attractor> = VolumeHash::new();
+        let mut attractors = Pool::default();
         for p in points {
             attractors.insert(Attractor::from(p));
         }
 
-        let mut nodes = Vec::with_capacity(1);
+        let mut nodes = Vec::new();
         nodes.push(Node::new(0., 0., 0.));
 
         let mut tree = TreeMachine::new(attractors, nodes);
@@ -394,7 +496,7 @@ impl SpaceColony {
         let mut sample_time = Duration::ZERO;
         let mut insert_time = Duration::ZERO;
 
-        let mut attractors = VolumeHash::new();
+        let mut attractors = Pool::default();
         for _i in 0..count {
             let start = Instant::now();
             let x = x_distr.sample(rng);
@@ -413,15 +515,18 @@ impl SpaceColony {
             insert_time += end.duration_since(mid);
         }
 
-        println!(
-            "construction time: \n  sample: {:?},\n  insert: {:?}",
-            sample_time, insert_time
-        );
-
-        let mut nodes = Vec::with_capacity(1);
+        let mut nodes = Vec::new();
         nodes.push(Node::new(0., 0., 0.));
 
+        let start = Instant::now();
         let tree = TreeMachine::new(attractors, nodes);
+        let load_time = Instant::now().duration_since(start);
+
+        println!(
+            "construction time: \n  sample: {:?},\n  insert: {:?},\n  load: {:?}",
+            sample_time, insert_time, load_time
+        );
+
         Self { tree }
     }
 
@@ -443,7 +548,7 @@ impl PointGen for SpaceColony {
             });
         }
 
-        for attractor in self.tree.attractors.values() {
+        for attractor in self.tree.attractors.iter() {
             output.push(Point {
                 position: attractor.point.into(),
                 color: Rgba::new(60, 180, 180, 127),
