@@ -1,6 +1,6 @@
 use std::num::NonZero;
 
-use glam::Vec3A;
+use glam::{Vec3A, Vec4};
 use numerics::{dist::SqDist, sphere::Sphere};
 use rstar::{AABB, PointDistance, RTreeObject};
 
@@ -11,8 +11,7 @@ use crate::{
 
 #[derive(Clone)]
 pub struct Attractor {
-    pub point: Vec3A,
-    pub influence: f32,
+    point_influence: Vec4,
 
     node_dist: SqDist,
     node: Option<NodeId>,
@@ -25,7 +24,16 @@ impl Attractor {
 
     #[inline]
     pub fn influence_sphere(&self) -> Sphere {
-        Sphere::new(self.point, self.influence)
+        Sphere::from_xyzr(self.point_influence)
+    }
+
+    #[inline]
+    pub fn point(&self) -> Vec3A {
+        Vec3A::from_vec4(self.point_influence)
+    }
+
+    pub fn influence(&self) -> f32 {
+        self.point_influence.w
     }
 
     pub fn node(&self) -> Option<NodeId> {
@@ -50,8 +58,7 @@ impl From<Vec3A> for Attractor {
     #[inline]
     fn from(point: Vec3A) -> Self {
         Self {
-            point,
-            influence: 30.0,
+            point_influence: point.extend(30.0),
 
             node_dist: SqDist::INFINITY,
             node: None,

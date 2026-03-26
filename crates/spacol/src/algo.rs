@@ -154,15 +154,16 @@ impl TreeMachine {
 
     fn assign_nodes_to_attractors(&mut self) {
         for a in self.attractors.iter_mut() {
-            let influence_2 = a.influence * a.influence;
+            let point = a.point();
+            let influence_2 = a.influence() * a.influence();
 
             // TODO: add config to pick random node from nearby attractors
 
             if let Some((node, dist_2)) = self
                 .node_tree
-                .nearest_neighbor_in_range(a.point.into(), influence_2)
+                .nearest_neighbor_in_range(point.into(), influence_2)
             {
-                debug_assert_eq!(dist_2, node.center().distance_squared(a.point));
+                debug_assert_eq!(dist_2, node.center().distance_squared(point));
                 debug_assert!(dist_2 <= influence_2);
                 a.assign_node(node.id(), SqDist::from_dist(dist_2));
             }
@@ -181,7 +182,7 @@ impl TreeMachine {
                 connected_nodes.push(v_id);
             }
 
-            v.grow_dir += (s.point - v.point).normalize();
+            v.grow_dir += (s.point() - v.point).normalize();
             v.connected_attractors += 1;
         }
     }
@@ -231,7 +232,7 @@ impl TreeMachine {
                 })
             {
                 let a = self.attractors.remove(attr.id().into()).unwrap();
-                let dist = a.point.distance_squared(v);
+                let dist = a.point().distance_squared(v);
                 debug_assert!(dist <= (d_k * d_k), "dist = {}, d_k = {}", dist, d_k * d_k);
                 counter += 1;
             }

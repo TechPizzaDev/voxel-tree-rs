@@ -96,7 +96,7 @@ impl PointGen for SpaceColony {
 
         for attractor in self.tree.attractors().iter() {
             output.push(Point {
-                position: attractor.point.into(),
+                position: attractor.point().into(),
                 color: Rgba::new(60, 180, 180, 127),
                 size: 1.,
             });
