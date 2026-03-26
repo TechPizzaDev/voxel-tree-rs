@@ -1,5 +1,3 @@
-#![feature(portable_simd)]
-
 mod app;
 pub use app::{App, FrameIndex};
 
@@ -10,5 +8,3 @@ mod platform;
 mod sync;
 
 mod gpu;
-
-mod numerics;

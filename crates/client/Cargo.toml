@@ -12,6 +12,7 @@ name = "client-bin"
 
 [dependencies]
 numerics.workspace = true
+spacol.workspace = true
 
 bytemuck.workspace = true
 env_logger.workspace = true
@@ -30,6 +31,7 @@ tracing-subscriber = { workspace = true, features = ["env-filter"] }
 bevy_math.workspace = true
 bvh.workspace = true
 rstar.workspace = true
+pool.workspace = true
 
 foldhash.workspace = true
 hashbrown.workspace = true

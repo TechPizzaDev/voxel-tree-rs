@@ -564,8 +564,10 @@ dependencies = [
  "num",
  "numerics",
  "pollster",
+ "pool",
  "rand 0.10.0",
  "rstar",
+ "spacol",
  "tracing",
  "tracing-subscriber",
  "wgpu",
@@ -2855,6 +2857,13 @@ dependencies = [
 [[package]]
 name = "spacol"
 version = "0.1.0"
+dependencies = [
+ "glam",
+ "numerics",
+ "pool",
+ "rstar",
+ "tracing",
+]
 
 [[package]]
 name = "spin"

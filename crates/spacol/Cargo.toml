@@ -1,0 +1,13 @@
+[package]
+name = "spacol"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+glam.workspace = true
+numerics.workspace = true
+
+rstar.workspace = true
+pool.workspace = true
+
+tracing.workspace = true

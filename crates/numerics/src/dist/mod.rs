@@ -4,6 +4,7 @@ pub struct SqDist(pub f32);
 
 impl SqDist {
     pub const MAX: Self = Self(f32::MAX);
+    pub const INFINITY: Self = Self(f32::INFINITY);
 
     pub const fn new(d_squared: f32) -> Self {
         Self(d_squared)
