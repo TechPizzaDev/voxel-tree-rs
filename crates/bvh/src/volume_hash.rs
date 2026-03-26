@@ -8,7 +8,7 @@ use hashbrown::{HashMap, HashSet, hash_map, hash_set};
 
 use smallvec::SmallVec;
 
-use crate::pool::Pool;
+use pool::Pool;
 
 #[derive(Clone, Default)]
 pub struct ZeroHasher;

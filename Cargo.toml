@@ -27,6 +27,7 @@ foldhash = "0.2"
 
 hashbrown = "0.16"
 smallvec = { version = "1.15", features = ["const_generics"] }
+pool.path = "crates/pool"
 
 tracing = "0.1"
 tracing-subscriber = "0.3"

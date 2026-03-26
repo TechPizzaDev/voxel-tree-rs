@@ -1,13 +1,13 @@
 [package]
 name = "bvh"
-version.workspace = true
+version = "0.1.0"
 edition.workspace = true
 
 [dependencies]
-numerics.workspace = true
-
 foldhash.workspace = true
 num.workspace = true
+numerics.workspace = true
 
 hashbrown.workspace = true
 smallvec.workspace = true
+pool.workspace = true

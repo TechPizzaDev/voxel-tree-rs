@@ -8,9 +8,6 @@ pub use bounds::Aabb;
 mod id;
 pub use id::{LeafId, NodeId};
 
-mod pool;
-pub use pool::Pool;
-
 mod volume_hash;
 pub use volume_hash::{Bucket, VolId, Volume, VolumeHash, ZeroHasher};
 
