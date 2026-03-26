@@ -3,7 +3,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use bvh::{Pool, Volume};
+use bvh::Pool;
 use bytemuck::Zeroable;
 use glam::{Vec3, Vec3A};
 use rand::{Rng, distr::Distribution};
@@ -14,10 +14,7 @@ use crate::{
     app::point_cloud::{Point, PointGen, Rgba},
     numerics::rstar::{RPoint, RSphere},
 };
-use numerics::{
-    dist::SqDist,
-    sphere::{SpatialKey, Sphere, SphereSpatialKeys},
-};
+use numerics::{dist::SqDist, sphere::Sphere};
 
 #[derive(Clone, Copy, Debug)]
 #[repr(transparent)]
@@ -84,28 +81,6 @@ impl From<Vec3A> for Attractor {
             node_dist: SqDist::MAX,
             node: None,
         }
-    }
-}
-impl Volume for Attractor {
-    type Key = SpatialKey<A_R>;
-
-    type Iter = SphereSpatialKeys<A_R>;
-
-    fn keys(&self) -> Self::Iter {
-        self.influence_sphere().keys()
-    }
-}
-
-const A_R: usize = 32;
-
-impl Volume for Sphere {
-    type Key = SpatialKey<A_R>;
-
-    type Iter = SphereSpatialKeys<A_R>;
-
-    #[inline]
-    fn keys(&self) -> Self::Iter {
-        self.clone().into()
     }
 }
 
