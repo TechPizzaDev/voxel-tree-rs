@@ -3,12 +3,12 @@ use std::time::{Duration, Instant};
 use glam::Vec3A;
 use pool::Pool;
 use rand::{Rng, distr::Distribution};
-use spacol::{Attractor, GrowError, Node, TreeMachine};
+use spacol::{Attractor, GrowError, Node, SpaCol};
 
 use crate::app::point_cloud::{Point, PointGen, Rgba};
 
 pub struct SpaceColony {
-    tree: TreeMachine,
+    tree: SpaCol,
 }
 impl SpaceColony {
     pub fn new_demo() -> Self {
@@ -26,7 +26,7 @@ impl SpaceColony {
         let mut nodes = Vec::new();
         nodes.push(Node::new(0., 0., 0.));
 
-        let mut tree = TreeMachine::new(attractors, nodes);
+        let mut tree = SpaCol::new(attractors, nodes);
         for i in 1..6 {
             tree.push_node(Node::new(0., -i as f32, 0.));
         }
@@ -65,7 +65,7 @@ impl SpaceColony {
         nodes.push(Node::new(0., 0., 0.));
 
         let start = Instant::now();
-        let tree = TreeMachine::new(attractors, nodes);
+        let tree = SpaCol::new(attractors, nodes);
         let load_time = Instant::now().duration_since(start);
 
         println!(
@@ -80,7 +80,7 @@ impl SpaceColony {
         self.tree.grow()
     }
 
-    pub fn tree(&self) -> &TreeMachine {
+    pub fn tree(&self) -> &SpaCol {
         &self.tree
     }
 }

@@ -37,7 +37,7 @@ impl rstar::RTreeParams for AttractorTreeParams {
     type DefaultInsertionStrategy = rstar::RStarInsertionStrategy;
 }
 
-pub struct TreeMachine {
+pub struct SpaCol {
     attractors: Pool<Attractor>,
     attractor_tree: RTree<AttrPoint, AttractorTreeParams>,
 
@@ -48,7 +48,7 @@ pub struct TreeMachine {
     kill_distance: f32,
     distance_factor: f32,
 }
-impl TreeMachine {
+impl SpaCol {
     /// At the beginning of tree generation, the space within the envelope
     /// is seeded with a set of attraction points (a). These points
     /// signal the availability of empty space for growth, and are

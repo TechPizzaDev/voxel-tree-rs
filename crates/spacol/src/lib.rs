@@ -1,7 +1,7 @@
 #![feature(portable_simd)]
 
 mod algo;
-pub use algo::{AttractorTreeParams, GrowError, NodeRecord, TreeMachine};
+pub use algo::{AttractorTreeParams, GrowError, NodeRecord, SpaCol};
 
 mod attractor;
 pub use attractor::{AttrId, AttrPoint, Attractor};
