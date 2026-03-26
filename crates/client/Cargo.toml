@@ -3,8 +3,6 @@ name = "client"
 version = "0.1.0"
 edition.workspace = true
 
-[lib]
-crate-type=["lib", "cdylib"]
 
 [[bin]]
 path = "./src/bin/main.rs"
