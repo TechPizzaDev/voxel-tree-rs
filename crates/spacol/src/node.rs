@@ -38,7 +38,7 @@ impl From<Vec3A> for Node {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct NodeId(NonZero<u32>);
 impl NodeId {

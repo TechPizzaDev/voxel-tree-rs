@@ -78,6 +78,8 @@ impl rstar::PointDistance for RSphere {
         let radius_2 = self.0.radius() * self.0.radius();
         dist_to_origin_2 <= radius_2
     }
+
+    // TODO: optimized distance_2_if_less_or_equal?
 }
 impl From<Sphere> for RSphere {
     #[inline]

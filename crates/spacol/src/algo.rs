@@ -2,14 +2,11 @@ use glam::Vec3A;
 use numerics::{dist::SqDist, sphere::Sphere};
 
 use pool::Pool;
-use rstar::{AABB, RTree, primitives::GeomWithData};
+use rstar::{AABB, RTree};
 
 use tracing::trace_span;
 
-use crate::{
-    Attractor, Node, NodeId, NodePoint,
-    rstar::{RPoint, RSphere},
-};
+use crate::{AttrId, AttrPoint, Attractor, Node, NodeId, NodePoint, rstar::RPoint};
 
 #[derive(Debug)]
 pub enum GrowError {
@@ -42,7 +39,7 @@ impl rstar::RTreeParams for AttractorTreeParams {
 
 pub struct TreeMachine {
     attractors: Pool<Attractor>,
-    attractor_tree: RTree<GeomWithData<RSphere, u32>, AttractorTreeParams>,
+    attractor_tree: RTree<AttrPoint, AttractorTreeParams>,
 
     nodes: Vec<Node>,
     node_tree: RTree<NodePoint>,
@@ -75,7 +72,7 @@ impl TreeMachine {
                 .iter()
                 .enumerate()
                 .map(|(i, attr)| {
-                    GeomWithData::new(attr.influence_sphere().into(), u32::try_from(i).unwrap())
+                    AttrPoint::new(attr.influence_sphere().into(), AttrId::try_from(i).unwrap())
                 })
                 .collect(),
         );
@@ -161,13 +158,13 @@ impl TreeMachine {
 
             // TODO: add config to pick random node from nearby attractors
 
-            if let Some((geo, dist_2)) = self
+            if let Some((node, dist_2)) = self
                 .node_tree
                 .nearest_neighbor_in_range(a.point.into(), influence_2)
             {
-                debug_assert_eq!(dist_2, geo.center().distance_squared(a.point));
+                debug_assert_eq!(dist_2, node.center().distance_squared(a.point));
                 debug_assert!(dist_2 <= influence_2);
-                a.assign_node(geo.id(), SqDist::from_dist(dist_2));
+                a.assign_node(node.id(), SqDist::from_dist(dist_2));
             }
         }
     }
@@ -227,13 +224,13 @@ impl TreeMachine {
             let v = self.nodes[usize::from(node)].point;
             let kill_sphere = Sphere::new(v, d_k);
 
-            for geo in self
+            for attr in self
                 .attractor_tree
                 .drain_with_selection_function(KillFunction {
                     sphere: kill_sphere,
                 })
             {
-                let a = self.attractors.remove(geo.data as usize).unwrap();
+                let a = self.attractors.remove(attr.id().into()).unwrap();
                 let dist = a.point.distance_squared(v);
                 debug_assert!(dist <= (d_k * d_k), "dist = {}, d_k = {}", dist, d_k * d_k);
                 counter += 1;
@@ -263,17 +260,17 @@ impl TreeMachine {
     }
 }
 
-pub struct KillFunction {
+struct KillFunction {
     sphere: Sphere,
 }
-impl rstar::SelectionFunction<GeomWithData<RSphere, u32>> for KillFunction {
+impl rstar::SelectionFunction<AttrPoint> for KillFunction {
     fn should_unpack_parent(&self, parent_envelope: &AABB<RPoint>) -> bool {
         let envelope_dist_2 = parent_envelope.distance_2(&self.sphere.center().into());
         let r = self.sphere.radius();
         envelope_dist_2 <= (r * r)
     }
 
-    fn should_unpack_leaf(&self, leaf: &GeomWithData<RSphere, u32>) -> bool {
-        self.sphere.contains_point(leaf.geom().0.center())
+    fn should_unpack_leaf(&self, leaf: &AttrPoint) -> bool {
+        self.sphere.contains_point(leaf.influence().center())
     }
 }
