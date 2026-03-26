@@ -1,5 +1,4 @@
 #![feature(portable_simd)]
-#![feature(decl_macro)]
 
 extern crate alloc;
 
@@ -8,8 +7,6 @@ pub use bounds::Aabb;
 
 mod id;
 pub use id::{LeafId, NodeId};
-
-pub mod numerics;
 
 mod pool;
 pub use pool::Pool;

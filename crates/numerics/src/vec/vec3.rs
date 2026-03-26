@@ -3,7 +3,7 @@ use std::{
     simd::cmp::{SimdOrd, SimdPartialEq, SimdPartialOrd},
 };
 
-use crate::numerics::{BVec3, TMask, TUnit, TVec};
+use crate::vec::{BVec3, TMask, TUnit, TVec};
 
 #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, Hash)]
 pub struct Vec3<U> {

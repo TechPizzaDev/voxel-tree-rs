@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-use crate::numerics::TUnit;
+use crate::vec::TUnit;
 
 pub trait TMask: Copy {
     fn to_bitmask(self) -> u64;

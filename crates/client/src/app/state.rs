@@ -14,12 +14,13 @@ use rand::{SeedableRng, rngs::Xoshiro128PlusPlus};
 use wgpu::{BindGroup, Buffer, BufferUsages, CommandEncoder, Extent3d, RenderPipeline};
 use winit::{event::WindowEvent, window::Window};
 
+use numerics::BinaryInteger;
+
 use crate::{
     App, FrameIndex,
     app::point_cloud::{Point, PointGen},
     egui_tools::EguiRenderer,
     gpu::query::{QueryInfo, SubmitError},
-    numerics::BinaryInteger,
 };
 
 #[derive(Clone, Copy, Default, Pod, Zeroable)]

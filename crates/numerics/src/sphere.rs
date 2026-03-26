@@ -1,6 +1,6 @@
 use glam::{Vec3A, Vec4};
 
-use crate::numerics::octree::vec3a_as_i32x4;
+use crate::vec::simd::vec3a_as_i32x4;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 #[repr(transparent)]

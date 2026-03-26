@@ -12,11 +12,11 @@ use tracing::trace_span;
 
 use crate::{
     app::point_cloud::{Point, PointGen, Rgba},
-    numerics::{
-        dist::SqDist,
-        rstar::{RPoint, RSphere},
-        spatial::{SpatialKey, Sphere, SphereSpatialKeys},
-    },
+    numerics::rstar::{RPoint, RSphere},
+};
+use numerics::{
+    dist::SqDist,
+    sphere::{SpatialKey, Sphere, SphereSpatialKeys},
 };
 
 #[derive(Clone, Copy, Debug)]

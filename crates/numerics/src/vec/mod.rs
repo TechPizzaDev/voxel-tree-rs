@@ -1,6 +1,8 @@
 mod bvec3;
 pub use bvec3::BVec3;
 
+pub mod simd;
+
 mod tunit;
 pub use tunit::TUnit;
 

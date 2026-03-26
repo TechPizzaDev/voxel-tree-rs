@@ -4,6 +4,8 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+numerics.workspace = true
+
 foldhash.workspace = true
 num.workspace = true
 

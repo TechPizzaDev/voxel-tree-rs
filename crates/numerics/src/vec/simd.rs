@@ -1,7 +1,8 @@
 use std::simd::{f32x4, num::SimdFloat};
 
-use bvh::numerics::Vec3;
 use glam::Vec3A;
+
+use crate::vec::Vec3;
 
 #[inline(always)]
 pub fn vec3a_as_u32x4(v: Vec3A) -> [u32; 4] {

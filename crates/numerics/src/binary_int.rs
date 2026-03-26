@@ -1,10 +1,3 @@
-pub mod dist;
-
-pub mod octree;
-
-pub mod rstar;
-
-pub mod spatial;
 
 pub trait BinaryInteger {
     fn round_up_to_pow_of_2(self) -> Self;

@@ -1,4 +1,4 @@
-use crate::numerics::TMask;
+use crate::vec::TMask;
 
 #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BVec3 {

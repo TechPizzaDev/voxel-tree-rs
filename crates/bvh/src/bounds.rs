@@ -1,6 +1,6 @@
 use std::simd::cmp::{SimdOrd, SimdPartialOrd};
 
-use crate::numerics::{TMask, TUnit, Vec3, vec_swizzle};
+use numerics::vec::{TMask, TUnit, Vec3, vec_swizzle};
 
 #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, Hash)]
 pub struct Aabb<U: TUnit> {

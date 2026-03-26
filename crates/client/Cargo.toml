@@ -1,6 +1,6 @@
 [package]
 name = "client"
-version.workspace = true
+version = "0.1.0"
 edition.workspace = true
 
 [lib]
@@ -11,9 +11,11 @@ path = "./src/bin/main.rs"
 name = "client-bin"
 
 [dependencies]
+numerics.workspace = true
+
 bytemuck.workspace = true
 env_logger.workspace = true
-glam = { workspace = true, features = ["core-simd"] }
+glam.workspace = true
 num.workspace = true
 pollster.workspace = true
 wgpu.workspace = true

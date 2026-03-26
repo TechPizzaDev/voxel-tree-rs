@@ -3,7 +3,7 @@ use std::ops::{Deref, DerefMut};
 use glam::Vec3A;
 use rstar::AABB;
 
-use crate::numerics::spatial::Sphere;
+use numerics::sphere::Sphere;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 #[repr(transparent)]
