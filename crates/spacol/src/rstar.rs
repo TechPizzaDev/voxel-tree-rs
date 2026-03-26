@@ -51,53 +51,55 @@ impl DerefMut for RPoint {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[repr(transparent)]
-pub struct RSphere(pub Sphere);
+pub struct RSphere(Sphere);
+impl RSphere {
+    #[inline]
+    pub fn center(&self) -> Vec3A {
+        self.0.center()
+    }
+
+    #[inline]
+    pub fn radius(&self) -> f32 {
+        self.0.radius()
+    }
+
+    #[inline]
+    pub fn radius_2(&self) -> f32 {
+        self.radius() * self.radius()
+    }
+}
 impl rstar::RTreeObject for RSphere {
     type Envelope = AABB<RPoint>;
 
+    #[inline]
     fn envelope(&self) -> Self::Envelope {
-        let r = Vec3A::splat(self.0.radius());
-        let p1 = (self.0.center() - r).into();
-        let p2 = (self.0.center() + r).into();
+        let c = self.center();
+        let r = Vec3A::splat(self.radius());
+        let p1 = (c - r).into();
+        let p2 = (c + r).into();
         AABB::from_corners(p1, p2)
     }
 }
 impl rstar::PointDistance for RSphere {
+    #[inline]
     fn distance_2(&self, point: &RPoint) -> f32 {
-        let d = self.0.center() - point.0;
-        // TODO: avoid sqrt?
-        let dist_to_origin = d.length();
-        let dist_to_ring = dist_to_origin - self.0.radius();
+        let d = self.center() - point.0;
+        let dist_to_origin = d.length_squared();
+        let dist_to_ring = dist_to_origin - self.radius_2();
         let dist_to_circle = f32::max(0.0, dist_to_ring);
-        dist_to_circle * dist_to_circle
+        dist_to_circle
     }
 
+    #[inline]
     fn contains_point(&self, point: &RPoint) -> bool {
-        let d = self.0.center() - point.0;
+        let d = self.center() - point.0;
         let dist_to_origin_2 = d.length_squared();
-        let radius_2 = self.0.radius() * self.0.radius();
-        dist_to_origin_2 <= radius_2
+        dist_to_origin_2 <= self.radius_2()
     }
-
-    // TODO: optimized distance_2_if_less_or_equal?
 }
 impl From<Sphere> for RSphere {
     #[inline]
     fn from(value: Sphere) -> Self {
         RSphere(value)
-    }
-}
-impl Deref for RSphere {
-    type Target = Sphere;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-impl DerefMut for RSphere {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
     }
 }
