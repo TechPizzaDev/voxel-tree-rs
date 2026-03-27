@@ -13,9 +13,9 @@ impl rstar::Point for RPoint {
 
     const DIMENSIONS: usize = 3;
 
-    #[inline(always)]
+    #[inline]
     fn generate(mut generator: impl FnMut(usize) -> f32) -> Self {
-        RPoint(Vec3A::new(generator(0), generator(1), generator(2)))
+        Self(Vec3A::new(generator(0), generator(1), generator(2)))
     }
 
     #[inline(always)]
@@ -26,6 +26,81 @@ impl rstar::Point for RPoint {
     #[inline(always)]
     fn nth_mut(&mut self, index: usize) -> &mut f32 {
         &mut self.0[index]
+    }
+
+    #[inline(always)]
+    fn new() -> Self {
+        Self(Vec3A::ZERO)
+    }
+
+    #[inline]
+    fn le_point_all(&self, other: &Self) -> bool {
+        self.0.cmple(other.0).all()
+    }
+
+    #[inline]
+    fn ge_point_all(&self, other: &Self) -> bool {
+        self.0.cmpge(other.0).all()
+    }
+
+    #[inline]
+    fn dot(&self, rhs: &Self) -> Self::Scalar {
+        self.0.dot(rhs.0)
+    }
+
+    #[inline]
+    fn reduce_sum(&self) -> Self::Scalar {
+        self.0.element_sum()
+    }
+
+    #[inline]
+    fn reduce_product(&self) -> Self::Scalar {
+        self.0.element_product()
+    }
+
+    #[inline]
+    fn splat(value: Self::Scalar) -> Self {
+        Self(Vec3A::splat(value))
+    }
+
+    #[inline]
+    fn min_point(&self, other: &Self) -> Self {
+        Self(self.0.min(other.0))
+    }
+
+    #[inline]
+    fn max_point(&self, other: &Self) -> Self {
+        Self(self.0.max(other.0))
+    }
+
+    #[inline]
+    fn length_2(&self) -> Self::Scalar {
+        self.0.length_squared()
+    }
+
+    #[inline]
+    fn sub(&self, other: &Self) -> Self {
+        Self(self.0 - other.0)
+    }
+
+    #[inline]
+    fn add(&self, other: &Self) -> Self {
+        Self(self.0 + other.0)
+    }
+
+    #[inline]
+    fn mul(&self, other: &Self) -> Self {
+        Self(self.0 * other.0)
+    }
+
+    #[inline]
+    fn div(&self, other: &Self) -> Self {
+        Self(self.0 / other.0)
+    }
+
+    #[inline]
+    fn distance_2(&self, other: &Self) -> Self::Scalar {
+        self.0.distance_squared(other.0)
     }
 }
 impl From<Vec3A> for RPoint {
