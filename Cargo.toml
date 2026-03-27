@@ -37,12 +37,12 @@ numerics.path = "crates/numerics"
 spacol.path = "crates/spacol"
 rstar = { version = "0.12.2", git = "https://github.com/TechPizzaDev/rstar-rs.git", branch = "neighbors_in_distance" }
 
-egui = "0.33.3"
-egui_plot = "0.34.1"
+egui = "0.34"
+egui_plot = "0.35"
 egui-wgpu = { path = "crates/egui-wgpu" }
-egui-winit = "0.33.3"
+egui-winit = "0.34"
 
-epaint = { version = "0.33.3", default-features = false }
+epaint = { version = "0.34", default-features = false }
 epaint_default_fonts = { version = "0.33.3" }
 
 ahash = { version = "0.8.12", default-features = false, features = [
