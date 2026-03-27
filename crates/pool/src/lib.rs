@@ -81,12 +81,22 @@ impl<T> Pool<T> {
         }
     }
 
+    // TODO: impl ExactSizeIterator since we know the exact len, but flat_map does not
+
     pub fn iter(&self) -> impl Iterator<Item = &T> {
         self.items.iter().flat_map(std::convert::identity)
     }
 
     pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut T> {
         self.items.iter_mut().flat_map(std::convert::identity)
+    }
+
+    pub fn slots(&self) -> impl Iterator<Item = (usize, Option<&T>)> {
+        self.items.iter().enumerate().map(|(i, v)| (i, v.as_ref()))
+    }
+
+    pub fn slots_mut(&mut self) -> impl Iterator<Item = (usize, Option<&mut T>)> {
+        self.items.iter_mut().enumerate().map(|(i, v)| (i, v.as_mut()))
     }
 }
 impl<T> Default for Pool<T> {

@@ -126,13 +126,16 @@ impl SpaCol {
 
         let _grow = trace_span!("grow").entered();
 
-        let mut node_buf = Vec::new();
-        trace_span!("assign_nodes_to_attractors").in_scope(|| self.assign_nodes_to_attractors());
-        node_buf.clear();
+        let mut assigned_attractors = Vec::new();
+        let span = trace_span!("assign_nodes_to_attractors", count = Empty);
+        span.in_scope(|| self.assign_nodes_to_attractors(&mut assigned_attractors));
+        span.record("count", assigned_attractors.len());
+        drop(span);
 
+        let mut node_buf = Vec::new();
         let span = trace_span!("grow_nodes_toward_attractors", count = Empty);
         span.in_scope(|| {
-            self.grow_nodes_toward_attractors(&mut node_buf);
+            self.grow_nodes_toward_attractors(&assigned_attractors, &mut node_buf);
         });
         span.record("count", node_buf.len());
         drop(span);
@@ -141,8 +144,10 @@ impl SpaCol {
             return Err(GrowError::OutOfReach);
         }
 
-        let new_nodes =
-            trace_span!("create_node_branches").in_scope(|| self.create_node_branches(&node_buf));
+        let span = trace_span!("create_node_branches", count = Empty);
+        let new_nodes = span.in_scope(|| self.create_node_branches(&node_buf));
+        span.record("count", new_nodes.count);
+        drop(span);
 
         let span = trace_span!("kill_attractors", count = Empty);
         let kill_count = span.in_scope(|| self.kill_attractors(new_nodes));
@@ -152,8 +157,12 @@ impl SpaCol {
         Ok(())
     }
 
-    fn assign_nodes_to_attractors(&mut self) {
-        for a in self.attractors.iter_mut() {
+    fn assign_nodes_to_attractors(&mut self, assigned_attractors: &mut Vec<AttrId>) {
+        for (a_id, a) in self.attractors.slots_mut() {
+            let Some(a) = a else {
+                continue;
+            };
+
             let point = a.point();
             let influence_2 = a.influence() * a.influence();
 
@@ -166,17 +175,24 @@ impl SpaCol {
                 debug_assert_eq!(dist_2, node.center().distance_squared(point));
                 debug_assert!(dist_2 <= influence_2);
                 a.assign_node(node.id(), SqDist::from_dist(dist_2));
+                assigned_attractors.push(AttrId::try_from(a_id).unwrap());
+            } else {
+                a.take_node();
             }
         }
     }
 
-    fn grow_nodes_toward_attractors(&mut self, connected_nodes: &mut Vec<NodeId>) {
-        // TODO: only iterate attractors near nodes (based on attr:node ratio)?
-
-        for s in self.attractors.iter_mut() {
-            let Some(v_id) = s.node() else {
+    fn grow_nodes_toward_attractors(
+        &mut self,
+        attractors: &[AttrId],
+        connected_nodes: &mut Vec<NodeId>,
+    ) {
+        for &s_id in attractors.iter() {
+            let Some(s) = self.attractors.get(s_id.into()) else {
                 continue;
             };
+
+            let v_id = s.node().unwrap();
             let v = &mut self.nodes[usize::from(v_id)];
             if v.connected_attractors == 0 {
                 connected_nodes.push(v_id);

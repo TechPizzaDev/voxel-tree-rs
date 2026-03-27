@@ -49,9 +49,9 @@ impl Attractor {
         self.node = Some(node);
     }
 
-    pub fn clear_node(&mut self) {
+    pub fn take_node(&mut self) -> Option<NodeId> {
         self.node_dist = SqDist::INFINITY;
-        self.node = None;
+        std::mem::take(&mut self.node)
     }
 }
 impl From<Vec3A> for Attractor {
