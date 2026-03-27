@@ -85,8 +85,8 @@ impl SpaCol {
             node_tree,
             records: Vec::new(),
 
-            kill_distance: 9.6,
-            distance_factor: 2.0,
+            kill_distance: 20.,
+            distance_factor: 4.0,
         }
     }
 

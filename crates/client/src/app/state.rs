@@ -254,7 +254,7 @@ impl AppState {
             main_pass_time_series: VecDeque::new(),
 
             colony: super::space_colony::SpaceColony::with_rng(
-                20000,
+                1000,
                 &mut Xoshiro128PlusPlus::seed_from_u64(0),
             ),
             grow_time: Duration::ZERO,
@@ -336,10 +336,16 @@ impl AppState {
             512.0,
         );
 
-        let view_mat = Mat4::look_at_lh(Vec3::new(0., 0., -300.), Vec3::new(150., 150., 150.), Vec3::new(0., 1.,0.))
+        let cam_radius = 350.;
+        let (eye_z, eye_x) = (time * 0.33).sin_cos();
+
+        let view_mat = Mat4::look_at_lh(
+            Vec3::new(eye_x * cam_radius + 100., 250., eye_z * cam_radius + 100.),
+            Vec3::new(100., 150., 100.),
+            Vec3::new(0., 1.,0.))
         //    * Mat4::from_rotation_x(std::f32::consts::PI * 0.4)
         //    * Mat4::from_rotation_z(time * 0.25)
-             * Mat4::from_rotation_y(time * 0.2 * 0.5)
+        //    * Mat4::from_rotation_y(time * 2.2 * 0.5);
         //     * Mat4::from_rotation_x(time * 0.1)
         ;
 

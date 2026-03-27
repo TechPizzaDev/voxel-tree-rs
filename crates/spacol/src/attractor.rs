@@ -58,7 +58,7 @@ impl From<Vec3A> for Attractor {
     #[inline]
     fn from(point: Vec3A) -> Self {
         Self {
-            point_influence: point.extend(30.0),
+            point_influence: point.extend(100.),
 
             node_dist: SqDist::INFINITY,
             node: None,

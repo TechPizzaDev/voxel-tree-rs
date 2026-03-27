@@ -35,9 +35,13 @@ impl SpaceColony {
     }
 
     pub fn with_rng(count: usize, rng: &mut impl Rng) -> Self {
-        let x_distr = rand::distr::Uniform::new(0., 200.).unwrap();
-        let y_distr = rand::distr::Uniform::new(0., 300.).unwrap();
-        let z_distr = rand::distr::Uniform::new(0., 200.).unwrap();
+        let w = 200.;
+        let h = 300.;
+        let d = 200.;
+
+        let x_distr = rand::distr::Uniform::new(0., w).unwrap();
+        let y_distr = rand::distr::Uniform::new(h * 0.25, h).unwrap();
+        let z_distr = rand::distr::Uniform::new(0., d).unwrap();
 
         let mut sample_time = Duration::ZERO;
         let mut insert_time = Duration::ZERO;
@@ -62,7 +66,7 @@ impl SpaceColony {
         }
 
         let mut nodes = Vec::new();
-        nodes.push(Node::new(0., 0., 0.));
+        nodes.push(Node::new(w / 2., 0., d / 2.));
 
         let start = Instant::now();
         let tree = SpaCol::new(attractors, nodes);
