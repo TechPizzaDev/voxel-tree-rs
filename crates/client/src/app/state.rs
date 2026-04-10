@@ -254,7 +254,7 @@ impl AppState {
             main_pass_time_series: VecDeque::new(),
 
             colony: super::space_colony::SpaceColony::with_rng(
-                1000,
+                20000,
                 &mut Xoshiro128PlusPlus::seed_from_u64(0),
             ),
             grow_time: Duration::ZERO,
