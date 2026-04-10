@@ -53,6 +53,7 @@ pub struct AppState {
     pub(crate) current_frame: FrameIndex,
     main_pass_time_series: VecDeque<PlotPoint>,
 
+    points_buf: Vec<Point>,
     colony: super::space_colony::SpaceColony,
     grow_time: Duration,
 
@@ -253,6 +254,7 @@ impl AppState {
             current_frame: 0.into(),
             main_pass_time_series: VecDeque::new(),
 
+            points_buf: Vec::new(),
             colony: super::space_colony::SpaceColony::with_rng(
                 20000,
                 &mut Xoshiro128PlusPlus::seed_from_u64(0),
@@ -362,7 +364,7 @@ impl AppState {
             ),
         };
 
-        let mut points = Vec::new();
+        self.points_buf.clear();
         // TODO: egui
         if false {
             super::point_cloud::PointSphere {
@@ -371,12 +373,12 @@ impl AppState {
                 point_size: 1.,
                 point_color: crate::app::point_cloud::Rgba::rgb(0, 175, 255),
             }
-            .generate(&mut points);
+            .generate(&mut self.points_buf);
         } else {
-            self.colony.generate(&mut points);
+            self.colony.generate(&mut self.points_buf);
         }
 
-        let point_bytes: &[u8] = bytemuck::cast_slice(&points);
+        let point_bytes: &[u8] = bytemuck::cast_slice(&self.points_buf);
         if self
             .point_buffer
             .as_ref()
@@ -391,7 +393,7 @@ impl AppState {
                 mapped_at_creation: false,
             }));
         }
-        self.point_count = points.len() as u32;
+        self.point_count = self.points_buf.len() as u32;
         self.queue
             .write_buffer(self.point_buffer.as_ref().unwrap(), 0, point_bytes);
 
