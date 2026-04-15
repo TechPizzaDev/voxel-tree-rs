@@ -10,6 +10,11 @@
   it
 }
 
+#show "TODO": it => {
+  set text(green)
+  it
+}
+
 #show: ieee.with(
   title: [Procedural trees for real-time environments],
   abstract: [
@@ -34,4 +39,11 @@
 
 #include "sections/intro.typ"
 
+#include "sections/index.typ"
+// #pagebreak()
+
+#include "sections/prior_work.typ"
+
 #include "sections/methods.typ"
+
+#include "sections/results.typ"
