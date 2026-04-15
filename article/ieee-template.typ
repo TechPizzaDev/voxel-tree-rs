@@ -3,30 +3,23 @@
 #let ieee(
   // The paper's title.
   title: [Paper Title],
-
   // An array of authors. For each author you can specify a name,
   // department, organization, location, and email. Everything but
   // but the name is optional.
   authors: (),
-
   // The paper's abstract. Can be omitted if you don't have one.
   abstract: none,
-
   // A list of index terms to display after the abstract.
   index-terms: (),
-
   // The article's paper size. Also affects the margins.
   paper-size: "us-letter",
-
   // The result of a call to the `bibliography` function or `none`.
   bibliography: none,
-
   // How figures are referred to from within the text.
   // Use "Figure" instead of "Fig." for computer-related publications.
   figure-supplement: [Fig.],
-
   // The paper's content.
-  body
+  body,
 ) = {
   // Set document metadata.
   set document(title: title, author: authors.map(author => author.name))
@@ -34,7 +27,7 @@
   // Set the body font.
   // As of 2024-08, the IEEE LaTeX template uses wider interword spacing
   // - See e.g. the definition \def\@IEEEinterspaceratioM{0.35} in IEEEtran.cls
-  set text(font: "TeX Gyre Termes", size: 10pt, spacing: .35em)
+  set text(font: "TeX Gyre Termes", size: 10pt, spacing: .35em, costs: (hyphenation: 150%))
 
   // Enums numbering
   set enum(numbering: "1)a)i)")
@@ -55,9 +48,7 @@
   set figure.caption(separator: [. ])
   show figure: fig => {
     let prefix = (
-      if fig.kind == table [TABLE]
-      else if fig.kind == image [Fig.]
-      else [#fig.supplement]
+      if fig.kind == table [TABLE] else if fig.kind == image [Fig.] else [#fig.supplement]
     )
     let numbers = numbering(fig.numbering, ..fig.counter.at(fig.location()))
     // Wrap figure captions in block to prevent the creation of paragraphs. In
@@ -90,7 +81,7 @@
         top: (55pt / 279mm) * 100%,
         bottom: (64pt / 279mm) * 100%,
       )
-    }
+    },
   )
 
   // Configure equation numbering and spacing.
@@ -103,7 +94,7 @@
       // Override equation references.
       link(it.element.location(), numbering(
         it.element.numbering,
-        ..counter(math.equation).at(it.element.location())
+        ..counter(math.equation).at(it.element.location()),
       ))
     } else {
       // Other references as usual.
@@ -160,8 +151,15 @@
   }
 
   // Style bibliography.
-  show std.bibliography: set text(8pt)
-  show std.bibliography: set block(spacing: 0.5em)
+  show std.bibliography: it => {
+    set text(8pt)
+    set block(spacing: 0.5em)
+    set par(spacing: 0.75em)
+    // TODO: add lines between par elements
+
+    it
+  }
+
   set std.bibliography(title: text(10pt)[References], style: "ieee")
 
   // Display the paper's title and authors at the top of the page,
@@ -214,7 +212,7 @@
           v(16pt, weak: true)
         }
       }
-    }
+    },
   )
 
   set par(justify: true, first-line-indent: (amount: 1em, all: true), spacing: 0.5em, leading: 0.5em)

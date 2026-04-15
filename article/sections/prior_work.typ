@@ -1,9 +1,15 @@
-= Prior Work <sec:prior_work>
+#import "../todo.typ": todo
 
-TODO: 
+= Prior Work <sec:prior_work> 
 
-TODO: @trees_with_spa_col
+#todo[@trees_with_spa_col]
 
-TODO: @growing_3d_artefacts, @learning_generate_3d_shapes
+#todo[@growing_3d_artefacts]
 
-TODO: @compelling_procedural_3D_env_landscapes
+#todo[@learning_generate_3d_shapes]
+
+#todo[@compelling_procedural_3D_env_landscapes]
+
+#todo[@self_organizing_tree_synthesis]
+
+#todo[mention R\* tree from https://en.wikipedia.org/wiki/DBSCAN]

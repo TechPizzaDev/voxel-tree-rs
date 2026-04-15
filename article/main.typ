@@ -1,4 +1,7 @@
 #import "ieee-template.typ": ieee
+#import "todo.typ": todo, mark
+
+#show: mark
 
 #show link: it => {
   set text(blue)
@@ -10,15 +13,10 @@
   it
 }
 
-#show "TODO": it => {
-  set text(green)
-  it
-}
-
 #show: ieee.with(
   title: [Procedural trees for real-time environments],
   abstract: [
-    TODO
+    #todo[]
   ],
   authors: (
     (
@@ -32,7 +30,7 @@
       organization: [Malmö Universitet],
     ),
   ),
-  index-terms: ("TODO", "generative tree modeling"),
+  index-terms: ("TODO:", "generative tree modeling"),
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Fig.],
 )
