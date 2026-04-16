@@ -4,9 +4,11 @@
   // The paper's title.
   title: [Paper Title],
   // An array of authors. For each author you can specify a name,
-  // department, organization, location, and email. Everything but
-  // but the name is optional.
+  // department, organization, location, and email.
+  // Everything but the name is optional.
   authors: (),
+  // An array of organizations.
+  organizations: (),
   // The paper's abstract. Can be omitted if you don't have one.
   abstract: none,
   // A list of index terms to display after the abstract.
@@ -190,11 +192,12 @@
           ..slice.map(author => align(center, {
             text(size: 11pt, author.name)
             if "department" in author [
-              \ #emph(author.department)
+              (#emph(author.department))
             ]
-            if "organization" in author [
-              \ #emph(author.organization)
-            ]
+            // TODO: display as prefix footnote on author name
+            //if "organization" in author [
+            //  \ #emph(author.organization)
+            //]
             if "location" in author [
               \ #author.location
             ]
@@ -212,6 +215,15 @@
           v(16pt, weak: true)
         }
       }
+
+      // Display the organizations list.
+      grid(
+        columns: (1fr,),
+        ..organizations.map(org => align(center, {
+          text(size: 11pt, org.name)
+          if "location" in org [, #org.location]
+        }))
+      )
     },
   )
 

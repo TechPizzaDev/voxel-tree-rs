@@ -1,5 +1,5 @@
 #import "ieee-template.typ": ieee
-#import "todo.typ": todo, mark
+#import "todo.typ": mark, todo
 
 #show: mark
 
@@ -20,13 +20,16 @@
   authors: (
     (
       name: "Michal Piatkowski",
-      department: [Student],
-      organization: [Malmö Universitet],
     ),
     (
       name: "Georgios Palamas",
       department: [Supervisor],
-      organization: [Malmö Universitet],
+    ),
+  ),
+  organizations: (
+    (
+      name: "Malmö Universitet",
+      location: "Sweden",
     ),
   ),
   index-terms: keywords.items,
@@ -34,4 +37,4 @@
   figure-supplement: [Fig.],
 )
 
-#include "sections/mod.typ" 
+#include "sections/mod.typ"
