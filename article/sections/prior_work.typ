@@ -1,15 +1,20 @@
 #import "../todo.typ": todo
 
-= Prior Work <sec:prior_work> 
+= Prior Work <sec:prior_work>
+
+#todo[@growing_neural_gas]
+#todo[@growing_neural_gas_efficient]
+
+#linebreak()
 
 #todo[@trees_with_spa_col]
+#todo[@self_organizing_tree_synthesis]
+
+#todo[mention R\* tree @rstar_tree (found by examining @dbscan_clustering) as critical optimization over other data-structures ()]
+
+#linebreak()
 
 #todo[@growing_3d_artefacts]
-
 #todo[@learning_generate_3d_shapes]
 
 #todo[@compelling_procedural_3D_env_landscapes]
-
-#todo[@self_organizing_tree_synthesis]
-
-#todo[mention R\* tree from https://en.wikipedia.org/wiki/DBSCAN]

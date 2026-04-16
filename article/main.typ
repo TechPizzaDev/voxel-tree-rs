@@ -13,11 +13,10 @@
   it
 }
 
+#import "keywords.typ"
 #show: ieee.with(
   title: [Procedural trees for real-time environments],
-  abstract: [
-    #todo[]
-  ],
+  abstract: include "sections/abstract.typ",
   authors: (
     (
       name: "Michal Piatkowski",
@@ -30,18 +29,9 @@
       organization: [Malmö Universitet],
     ),
   ),
-  index-terms: ("TODO:", "generative tree modeling"),
+  index-terms: keywords.items,
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Fig.],
 )
 
-#include "sections/intro.typ"
-
-#include "sections/index.typ"
-// #pagebreak()
-
-#include "sections/prior_work.typ"
-
-#include "sections/methods.typ"
-
-#include "sections/results.typ"
+#include "sections/mod.typ" 

@@ -57,3 +57,56 @@
   location  = {New Orleans, Louisiana},
   series    = {SIGGRAPH '09}
 }
+
+@article{growing_neural_gas,
+  title   = {A growing neural gas network learns topologies},
+  author  = {Fritzke, Bernd},
+  journal = {Advances in neural information processing systems},
+  volume  = {7},
+  year    = {1994}
+}
+
+@article{growing_neural_gas_efficient,
+  title    = {Growing neural gas efficiently},
+  journal  = {Neurocomputing},
+  volume   = {104},
+  pages    = {72-82},
+  year     = {2013},
+  issn     = {0925-2312},
+  doi      = {10.1016/j.neucom.2012.10.004},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0925231212008351},
+  author   = {Daniel Fišer and Jan Faigl and Miroslav Kulich},
+  keywords = {Self-organizing map, Growing neural gas, Nearest neighbor search, 3-D surface reconstruction},
+  abstract = {This paper presents optimization techniques that substantially speed up the Growing Neural Gas (GNG) algorithm. The GNG is an example of the Self-Organizing Map algorithm that is a subject of an intensive research interest in recent years as it is used in various practical applications. However, a poor time performance on large scale problems requiring neural networks with a high amount of nodes can be a limiting factor for further applications (e.g., cluster analysis, classification, 3-D reconstruction) or a wider usage. We propose two optimization techniques that are aimed exclusively on an efficient implementation of the GNG algorithm internal structure rather than on a modification of the original algorithm. The proposed optimizations preserve all properties of the GNG algorithm and enable to use it on large scale problems with reduced computational requirements in several orders of magnitude.}
+}
+
+@inproceedings{rstar_tree,
+  author    = {Beckmann, Norbert and Kriegel, Hans-Peter and Schneider, Ralf and Seeger, Bernhard},
+  title     = {The R*-tree: an efficient and robust access method for points and rectangles},
+  year      = {1990},
+  isbn      = {0897913655},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/93597.98741},
+  doi       = {10.1145/93597.98741},
+  abstract  = {The R-tree, one of the most popular access methods for rectangles, is based on the heuristic optimization of the area of the enclosing rectangle in each inner node. By running numerous experiments in a standardized testbed under highly varying data, queries and operations, we were able to design the R*-tree which incorporates a combined optimization of area, margin and overlap of each enclosing rectangle in the directory. Using our standardized testbed in an exhaustive performance comparison, it turned out that the R*-tree clearly outperforms the existing R-tree variants. Guttman's linear and quadratic R-tree and Greene's variant of the R-tree. This superiority of the R*-tree holds for different types of queries and operations, such as map overlay, for both rectangles and multidimensional points in all experiments. From a practical point of view the R*-tree is very attractive because of the following two reasons 1 it efficiently supports point and spatial data at the same time and 2 its implementation cost is only slightly higher than that of other R-trees.},
+  booktitle = {Proceedings of the 1990 ACM SIGMOD International Conference on Management of Data},
+  pages     = {322–331},
+  numpages  = {10},
+  location  = {Atlantic City, New Jersey, USA},
+  series    = {SIGMOD '90}
+}
+
+@inproceedings{dbscan_clustering,
+  author    = {Ester, Martin and Kriegel, Hans-Peter and Sander, J\"{o}rg and Xu, Xiaowei},
+  title     = {A density-based algorithm for discovering clusters in large spatial databases with noise},
+  year      = {1996},
+  publisher = {AAAI Press},
+  abstract  = {Clustering algorithms are attractive for the task of class identification in spatial databases. However, the application to large spatial databases rises the following requirements for clustering algorithms: minimal requirements of domain knowledge to determine the input parameters, discovery of clusters with arbitrary shape and good efficiency on large databases. The well-known clustering algorithms offer no solution to the combination of these requirements. In this paper, we present the new clustering algorithm DBSCAN relying on a density-based notion of clusters which is designed to discover clusters of arbitrary shape. DBSCAN requires only one input parameter and supports the user in determining an appropriate value for it. We performed an experimental evaluation of the effectiveness and efficiency of DBSCAN using synthetic data and real data of the SEQUOIA 2000 benchmark. The results of our experiments demonstrate that (1) DBSCAN is significantly more effective in discovering clusters of arbitrary shape than the well-known algorithm CLAR-ANS, and that (2) DBSCAN outperforms CLARANS by a factor of more than 100 in terms of efficiency.},
+  booktitle = {Proceedings of the Second International Conference on Knowledge Discovery and Data Mining},
+  pages     = {226–231},
+  numpages  = {6},
+  keywords  = {handling nlj4-275oise, efficiency on large spatial databases, clustering algorithms, arbitrary shape of clusters},
+  location  = {Portland, Oregon},
+  series    = {KDD'96}
+}
