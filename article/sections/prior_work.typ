@@ -4,6 +4,7 @@
 
 #todo[@growing_neural_gas]
 #todo[@growing_neural_gas_efficient]
+#todo[@neural_gas_color_object_reconstruct]
 
 #linebreak()
 
@@ -14,7 +15,8 @@
 
 #linebreak()
 
+#todo[@growing_neural_cellular_automata]
 #todo[@growing_3d_artefacts]
 #todo[@learning_generate_3d_shapes]
 
-#todo[@compelling_procedural_3D_env_landscapes]
+#todo[@compelling_procedural_3d_env_landscapes]

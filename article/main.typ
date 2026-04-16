@@ -28,7 +28,7 @@
   ),
   organizations: (
     (
-      name: "Malmö Universitet",
+      name: "Malmö University",
       location: "Sweden",
     ),
   ),
