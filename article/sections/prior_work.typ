@@ -11,7 +11,11 @@
 #todo[@trees_with_spa_col]
 #todo[@self_organizing_tree_synthesis]
 
+#todo[@windy_tree_stress_response]
+
 #todo[mention R\* tree @rstar_tree (found by examining @dbscan_clustering) as critical optimization over other data-structures ()]
+
+#todo[evaluate performance claims in @ckd_tree]
 
 #linebreak()
 
