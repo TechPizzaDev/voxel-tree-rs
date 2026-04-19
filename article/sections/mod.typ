@@ -1,9 +1,8 @@
 #import "indices.typ"
 
-#include "intro.typ"
-
 #indices.headings
-// #pagebreak()
+
+#include "intro.typ"
 
 #include "prior_work.typ"
 

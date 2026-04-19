@@ -37,10 +37,13 @@
   // Tables & figures
   show figure: set block(spacing: 15.5pt)
   show figure: set place(clearance: 15.5pt)
-  show figure.where(kind: table): set figure.caption(position: top, separator: [\ ])
+
+  show figure.where(kind: table): set figure.caption(position: bottom)
   show figure.where(kind: table): set text(size: 8pt)
-  show figure.where(kind: table): set figure(numbering: "I")
+  show figure.where(kind: table): set figure(numbering: "1")
+
   show figure.where(kind: image): set figure(supplement: figure-supplement, numbering: "1")
+
   show figure.caption: set text(size: 8pt)
   show figure.caption: set align(start)
   show figure.caption.where(kind: table): set align(center)
@@ -50,14 +53,13 @@
   set figure.caption(separator: [. ])
   show figure: fig => {
     let prefix = (
-      if fig.kind == table [TABLE] else if fig.kind == image [Fig.] else [#fig.supplement]
+      if fig.kind == table [Table] else if fig.kind == image [Figure] else [#fig.supplement]
     )
     let numbers = numbering(fig.numbering, ..fig.counter.at(fig.location()))
     // Wrap figure captions in block to prevent the creation of paragraphs. In
     // particular, this means `par.first-line-indent` does not apply.
     // See https://github.com/typst/templates/pull/73#discussion_r2112947947.
     show figure.caption: it => block[#prefix~#numbers#it.separator#it.body]
-    show figure.caption.where(kind: table): smallcaps
     fig
   }
 
@@ -109,7 +111,7 @@
   set list(indent: 10pt, body-indent: 9pt)
 
   // Configure headings.
-  set heading(numbering: "I.A.a)")
+  set heading(numbering: "1.")
   show heading: it => {
     // Find out the final number of the heading counter.
     let levels = counter(heading).get()
@@ -129,7 +131,7 @@
       show: block.with(above: 15pt, below: 13.75pt, sticky: true)
       show: smallcaps
       if it.numbering != none and not is-ack {
-        numbering("I.", deepest)
+        numbering("1.", deepest)
         h(7pt, weak: true)
       }
       it.body
@@ -138,14 +140,14 @@
       set text(style: "italic")
       show: block.with(spacing: 10pt, sticky: true)
       if it.numbering != none {
-        numbering("A.", deepest)
+        counter(heading).display("1.")
         h(7pt, weak: true)
       }
       it.body
     } else [
       // Third level headings are run-ins too, but different.
       #if it.level == 3 {
-        numbering("a)", deepest)
+        numbering("1.", deepest)
         [ ]
       }
       _#(it.body):_
