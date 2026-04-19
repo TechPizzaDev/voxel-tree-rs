@@ -1,4 +1,4 @@
-#import "../todo.typ": todo
+#import "../markers.typ": todo
 #todo[
   // write last
 ]
