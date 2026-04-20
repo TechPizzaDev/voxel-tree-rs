@@ -1,8 +1,13 @@
-#import "ieee-template.typ": ieee
-#import "markers.typ": mark, todo
+#import "abbr.typ"
+#show: abbr.show-rule
 
-#show: mark
+#import "markers.typ"
+#show: markers.show-rule
 
+#import "abbreviations.typ"
+#abbreviations.define(abbr)
+
+// TODO: move to style.typ?
 #show link: it => {
   set text(blue)
   it
@@ -14,7 +19,8 @@
 }
 
 #import "keywords.typ"
-#show: ieee.with(
+#import "ieee-template.typ"
+#show: ieee-template.ieee.with(
   title: [Procedural trees for real-time environments],
   abstract: include "sections/abstract.typ",
   authors: (
@@ -37,4 +43,5 @@
   figure-supplement: [Fig.],
 )
 
-#include "sections/mod.typ"
+#import "sections/mod.typ": body
+#body(abbr)

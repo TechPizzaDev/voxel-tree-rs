@@ -16,7 +16,7 @@
   [*REFINE:* #body]
 }
 
-#let mark(body) = [
+#let show-rule(body) = [
   #show "TODO": it => {
     set text(TODO_GREEN)
     it

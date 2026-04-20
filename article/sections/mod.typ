@@ -1,19 +1,26 @@
 #import "indices.typ"
 
-#indices.headings
+#let body(abbr) = [
+  #indices.headings
 
-#include "intro.typ"
+  #include "intro.typ"
 
-#include "prior_work.typ"
+  #include "prior_work.typ"
 
-#include "methods.typ"
+  #include "methods.typ"
 
-#include "results.typ"
+  #include "results.typ"
 
-#include "discussion.typ"
+  #include "discussion.typ"
 
-#include "future_work.typ"
+  #include "future_work.typ"
 
-#indices.figures
+  // TODO: remove pagebreak ?
+  #pagebreak()
 
-#indices.tables
+  #abbr.list(title: "Glossary", columns: 1)
+
+  #indices.figures
+
+  #indices.tables
+]
