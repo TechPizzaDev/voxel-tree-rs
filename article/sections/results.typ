@@ -2,7 +2,7 @@
 
 = Results <sec:results>
 
-== Space Colonization
+== @SC:lo
 #todo[@SC reimplementation:
   - We tested custom spatial hash buckets and octrees (slowest construction, unbalanced storage, unbalanced lookup time).
   
@@ -58,8 +58,8 @@
 
       // TODO: load from file?
       [Octree], [#ms(100)], [#ms(1500)], [Low],
-      [Buckets], [#ms(200)], [#ms(800)], [High],
-      [R\* tree], [#ms(1.5)], [#ms(300)], [Low],
+      [Spatial Hash], [#ms(200)], [#ms(800)], [High],
+      [R\*-tree], [#ms(1.5)], [#ms(300)], [Low],
     )],
   caption: "Data structure metrics for 20000 randomly distributed attractors.",
 ) <data_structure_metrics>
@@ -70,7 +70,7 @@
   - RAM: $2 times 32$ GB, 5200 MT/s, CL32
 ]
 
-== Neural Cellular Automata
+== @NCA:lo
 #refine[Preliminary result around @NCA @growing_3d_artefacts:
   - Growth quickly collapses by scaling weights with values below one.
   - Introducing more randomness to cell propagation creates spurious growths, which may be effective for tree variation, but may appear too close to unnatural overgrowth without introducing new restrictions.
@@ -79,11 +79,11 @@
     columns: 2,
     gutter: 2pt,
     [#figure(
-      image("../img/NCA,original.png", scaling: "pixelated"),
+      image("../img/NCA,original.png"),
       caption: [Original @NCA tree],
     )],
     [#figure(
-      image("../img/NCA,modified,lifemask_0.2,fire_0.75.png", scaling: "pixelated"),
+      image("../img/NCA,modified,lifemask_0.2,fire_0.75.png"),
       caption: [Experimental @NCA tree with factors: $"mask"=0.2, "fire"=0.75$],
     )],
   )

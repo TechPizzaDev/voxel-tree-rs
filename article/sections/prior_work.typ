@@ -9,7 +9,7 @@
   Sounds fair to mention, considering that we can look at their code and see how large trees/structures were generated in practice. This gives us a good glimpse into upsides and pitfalls.
 ]
 
-== Growing Neural Gas
+== @GNG:lo
 #refine[
   Supervisor suggested checking out @GNG networks @growing_neural_gas when the initial goal was established.
   Even after exploring various @GNG implementations, we concluded that @GNG was not particularly relevant to the subject of growing trees, nor was it effective for real-time even with major optimizations @growing_neural_gas_efficient.
@@ -19,7 +19,7 @@
   On the topic of @GNG, we also explored the @LOD aspect and found interesting applications for compressing point cloud colors @neural_gas_color_object_reconstruct, but without relevance to _growing_ interesting trees.
 ]
 
-== Space Colonization
+== @SC:lo
 #todo[
   - Algo and how it's good for trees @trees_with_spa_col
 
@@ -34,7 +34,7 @@
   - evaluate performance claims in @ckd_tree
 ]
 
-== Neural Cellular Automata
+== @NCA:lo
 
 #todo[Explain the algo and how it may be an interesting avenue for vegetation @growing_neural_cellular_automata]
 
