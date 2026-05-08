@@ -44,14 +44,14 @@ impl Attractor {
         self.node_dist
     }
 
-    pub fn assign_node(&mut self, node: NodeId, dist: SqDist) {
+    pub fn assign_node(&mut self, node: NodeId, dist: SqDist) -> Option<NodeId> {
         self.node_dist = dist;
-        self.node = Some(node);
+        self.node.replace(node)
     }
 
     pub fn take_node(&mut self) -> Option<NodeId> {
         self.node_dist = SqDist::INFINITY;
-        std::mem::take(&mut self.node)
+        self.node.take()
     }
 }
 impl From<Vec3A> for Attractor {

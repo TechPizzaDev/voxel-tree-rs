@@ -278,7 +278,7 @@ impl AppState {
             format: self.surface_format,
             // Request compatibility with the sRGB-format texture view we‘re going to create later.
             view_formats: vec![self.surface_format.add_srgb_suffix()],
-            alpha_mode: wgpu::CompositeAlphaMode::Auto,
+            alpha_mode: wgpu::CompositeAlphaMode::PreMultiplied,
             width: self.window_size.width,
             height: self.window_size.height,
             desired_maximum_frame_latency: 2,
@@ -318,18 +318,20 @@ impl AppState {
         let time = self.current_frame.0 as f32 / 60.0;
 
         let start = Instant::now();
-        let grow_result = self.colony.grow();
-        let grow_dur = Instant::now().duration_since(start);
-        self.grow_time += grow_dur;
+        if time > 2.5 {
+            let grow_result = self.colony.grow();
+            let grow_dur = Instant::now().duration_since(start);
+            self.grow_time += grow_dur;
 
-        println!(
-            "{:?} = attractors: {}, nodes: {}, time: {:?}, total: {:?}",
-            grow_result,
-            self.colony.tree().attractors().len(),
-            self.colony.tree().nodes().len(),
-            grow_dur,
-            self.grow_time
-        );
+            println!(
+                "{:?} = attractors: {}, nodes: {}, time: {:?}, total: {:?}",
+                grow_result,
+                self.colony.tree().attractors().len(),
+                self.colony.tree().nodes().len(),
+                grow_dur,
+                self.grow_time
+            );
+        }
 
         let proj_mat = Mat4::perspective_lh(
             (2.0 * std::f32::consts::PI) / 7.0,
@@ -338,11 +340,11 @@ impl AppState {
             512.0,
         );
 
-        let cam_radius = 350.;
-        let (eye_z, eye_x) = (time * 0.33).sin_cos();
+        let cam_radius = 400.;
+        let (eye_z, eye_x) = (0f32).sin_cos();
 
         let view_mat = Mat4::look_at_lh(
-            Vec3::new(eye_x * cam_radius + 100., 250., eye_z * cam_radius + 100.),
+            Vec3::new(eye_x * cam_radius + 100., 150., eye_z * cam_radius + 100.),
             Vec3::new(100., 150., 100.),
             Vec3::new(0., 1.,0.))
         //    * Mat4::from_rotation_x(std::f32::consts::PI * 0.4)
@@ -444,10 +446,10 @@ impl AppState {
                 resolve_target: None,
                 ops: wgpu::Operations {
                     load: wgpu::LoadOp::Clear(wgpu::Color {
-                        r: 100.0 / 255.0,
-                        g: 149.0 / 255.0,
-                        b: 237.0 / 255.0,
-                        a: 1.0,
+                        r: 0.,
+                        g: 0.,
+                        b: 0.,
+                        a: 0.0,
                     }),
                     store: wgpu::StoreOp::Store,
                 },
@@ -573,7 +575,7 @@ impl AppState {
             );
         }
 
-        self.queue.submit([encoder.finish(), gui_encoder.finish()]);
+        self.queue.submit([encoder.finish()]);
 
         self.window.pre_present_notify();
         surface_texture.present();

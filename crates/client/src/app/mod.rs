@@ -9,6 +9,7 @@ use std::{fmt::Display, ops::AddAssign, path::PathBuf, sync::Arc};
 
 use winit::{
     application::ApplicationHandler,
+    dpi::PhysicalSize,
     event::WindowEvent,
     event_loop::ActiveEventLoop,
     window::{Window, WindowId},
@@ -50,7 +51,11 @@ impl ApplicationHandler for App {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let window = Arc::new(
             event_loop
-                .create_window(Window::default_attributes())
+                .create_window(
+                    Window::default_attributes()
+                        .with_inner_size(PhysicalSize::new(750, 1000))
+                        .with_transparent(true),
+                )
                 .unwrap(),
         );
 

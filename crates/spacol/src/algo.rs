@@ -106,6 +106,29 @@ impl SpaCol {
         &self.nodes
     }
 
+    pub fn node_parent(&self, id: NodeId) -> Option<NodeId> {
+        match self.nodes.get(usize::from(id)) {
+            Some(node) if node.parent != NodeId::ZERO => Some(node.parent),
+            _ => None,
+        }
+    }
+
+    pub fn node_depth(&self, mut id: NodeId) -> usize {
+        let mut depth = 0;
+        while let Some(parent) = self.node_parent(id) {
+            id = parent;
+            depth += 1;
+        }
+        depth
+    }
+
+    pub fn node_count(&self, parent: NodeId) -> usize {
+        self.nodes
+            .iter()
+            .filter(|node| node.parent == parent)
+            .count()
+    }
+
     pub fn node_records(&self) -> &Vec<NodeRecord> {
         &self.records
     }
