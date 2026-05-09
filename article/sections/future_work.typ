@@ -17,3 +17,10 @@
   1. spend less time in debugging/testing
   2. attempt reaching parity with @self_organizing_tree_synthesis in particular
 ]
+
+#todo[
+  https://github.com/peterbraden/genetic-lisa
+  - related to @persistent_homology and 
+  - abstract triangles vs rigid cells (of @NCA)
+  - genetic/neural algo to spawn @SC attractors?
+]

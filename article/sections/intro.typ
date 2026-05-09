@@ -22,3 +22,11 @@
   Vegetation can make for effective decoration in making terrain varied and more interesting to players [src?]. Trees in particular play an important role due to their relative size in the player's field of view, acting as subliminal landmarks @perceiving_realism_of_procedural_trees_in_games.
   We may exploit this through distinct mutations, with one of the most obvious variations being tree height when accounting for distance [src ...me? find science?]. 
 ]
+
+#todo[
+  4 Questions:
+    1. problem
+    2. what others have done
+    3. why the problem persists / ongoing research
+    4. what our research adds to this area (algos?)
+]

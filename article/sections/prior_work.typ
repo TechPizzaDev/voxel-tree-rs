@@ -2,6 +2,16 @@
 
 = Prior Work <sec:prior_work>
 
+#todo[
+  intro paragraph:
+  - real-time generation for games
+  - not focused on realism, but resembles life (bending the rules)
+
+  - how did i manage to mention relativity... (subatomic scales are not needed)
+  - we don't need to simulate life to recreate it
+    - this originated from the @SC authors being proud of their algo "growing like actual trees"
+]
+
 #todo[Mention Terraria "Living Trees"? They were important inspiration after all...]
 
 #todo[

@@ -40,6 +40,11 @@ At some point, our supervisor seemed to recognize this problem as related to @DB
 ]
 
 #todo[
+  - black box / related to evolutionary algo
+  - difficult for algo to settle on novel shapes
+]
+
+#todo[
   - pruning methods; why is it important, how to measure?
   - how easy is it to control appearance?
 

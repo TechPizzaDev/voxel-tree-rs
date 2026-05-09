@@ -24,6 +24,10 @@
 ]
 
 #todo[
+  Discuss future work from @SC papers: convert scanned point clouds of real trees to algo params
+]
+
+#todo[
   Explain relevance of environment in tree growth:
   - Local species (pests, competition, mycelium) may act as biomes to dictate tree attributes.
 
