@@ -2664,7 +2664,7 @@ checksum = "19b30a45b0cd0bcca8037f3d0dc3421eaf95327a17cad11964fb8179b4fc4832"
 [[package]]
 name = "rstar"
 version = "0.12.2"
-source = "git+https://github.com/TechPizzaDev/rstar-rs.git?branch=neighbors_in_distance#194b5ae54df85e98e98fbfbd08979111f18d3516"
+source = "git+https://github.com/TechPizzaDev/rstar-rs.git?branch=neighbors_in_distance#eaa68acb56f40dbc51d90fd6ea35f296d1665874"
 dependencies = [
  "heapless",
  "num-traits",

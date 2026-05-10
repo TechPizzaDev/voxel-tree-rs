@@ -283,8 +283,8 @@ struct KillFunction {
 impl rstar::SelectionFunction<AttrPoint> for KillFunction {
     fn should_unpack_parent(&self, parent_envelope: &AABB<RPoint>) -> bool {
         let envelope_dist_2 = parent_envelope.distance_2(&self.sphere.center().into());
-        let r = self.sphere.radius();
-        envelope_dist_2 <= (r * r)
+        let radius = self.sphere.radius();
+        envelope_dist_2 <= (radius * radius)
     }
 
     fn should_unpack_leaf(&self, leaf: &AttrPoint) -> bool {

@@ -113,6 +113,8 @@ impl RTreeObject for NodePoint {
     }
 }
 impl PointDistance for NodePoint {
+    // Nodes lack any sphere radius by default.
+
     #[inline]
     fn distance_2(&self, point: &RPoint) -> f32 {
         self.center().distance_squared(point.0)

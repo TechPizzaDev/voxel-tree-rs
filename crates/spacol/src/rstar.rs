@@ -140,7 +140,8 @@ impl RSphere {
 
     #[inline]
     pub fn radius_2(&self) -> f32 {
-        self.radius() * self.radius()
+        let radius = self.radius();
+        radius * radius
     }
 }
 impl rstar::RTreeObject for RSphere {
@@ -150,9 +151,9 @@ impl rstar::RTreeObject for RSphere {
     fn envelope(&self) -> Self::Envelope {
         let c = self.center();
         let r = Vec3A::splat(self.radius());
-        let p1 = (c - r).into();
-        let p2 = (c + r).into();
-        AABB::from_corners(p1, p2)
+        let lower = (c - r).into();
+        let upper = (c + r).into();
+        AABB::from_corners_unchecked(lower, upper)
     }
 }
 impl rstar::PointDistance for RSphere {
@@ -170,6 +171,17 @@ impl rstar::PointDistance for RSphere {
         let d = self.center() - point.0;
         let dist_to_origin_2 = d.length_squared();
         dist_to_origin_2 <= self.radius_2()
+    }
+
+    #[inline]
+    fn distance_2_if_less_or_equal(&self, point: &RPoint, max_distance_2: f32) -> Option<f32> {
+        // Sphere distance is cheap, so avoid envelope check,
+        // since the envelope box always encloses the sphere.
+        let distance_2 = self.distance_2(point);
+        if distance_2 <= max_distance_2 {
+            return Some(distance_2);
+        }
+        None
     }
 }
 impl From<Sphere> for RSphere {

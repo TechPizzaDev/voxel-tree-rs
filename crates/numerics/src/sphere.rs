@@ -37,14 +37,16 @@ impl Sphere {
 
     #[inline]
     pub fn contains_point(&self, point: Vec3A) -> bool {
-        self.intersects(&Self::new(point, 0.))
+        let center_dist_sq = self.center().distance_squared(point);
+        let radius = self.radius();
+        center_dist_sq <= (radius * radius)
     }
 
     #[inline]
     pub fn intersects(&self, other: &Self) -> bool {
         let center_dist_sq = self.center().distance_squared(other.center());
-        let radius_sum_sq = self.radius() + other.radius();
-        center_dist_sq <= (radius_sum_sq * radius_sum_sq)
+        let radius_sum = self.radius() + other.radius();
+        center_dist_sq <= (radius_sum * radius_sum)
     }
 }
 
