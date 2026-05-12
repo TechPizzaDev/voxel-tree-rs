@@ -10,10 +10,15 @@
   - how did i manage to mention relativity... (subatomic scales are not needed)
   - we don't need to simulate life to recreate it
     - this originated from the @SC authors being proud of their algo "growing like actual trees"
+    - structures generally have to fit the artistic vision of the given media to not feel out of place [src?].
 ]
 
+== Games
+
+=== Terraria
 #todo[Mention Terraria "Living Trees"? They were important inspiration after all...]
 
+=== Minecraft
 #todo[
   Mention Minecraft mods that were used in thesis slides?
   Sounds fair to mention, considering that we can look at their code and see how large trees/structures were generated in practice. This gives us a good glimpse into upsides and pitfalls.
