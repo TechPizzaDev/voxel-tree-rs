@@ -36,6 +36,11 @@
 
 == @SC:lo
 #todo[
+  we can classify the methods, starting with @SC:
+  this is a space-filling algo, what else exists?
+]
+
+#todo[
   - Algo and how it's good for trees @trees_with_spa_col
 
   - Shadow propagation based approach mentioned in @self_organizing_tree_synthesis

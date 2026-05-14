@@ -24,9 +24,11 @@
 ]
 
 #todo[
-  4 Questions:
-    1. problem
-    2. what others have done
+  4 Questions (1,2,3 can essentially be answered with personal experience):
+    1. problem - 
+    2. what others have done - billboards bad, 
     3. why the problem persists / ongoing research
     4. what our research adds to this area (algos?)
 ]
+
+#todo[https://ieeexplore.ieee.org/abstract/document/1323963]
