@@ -31,4 +31,16 @@
     4. what our research adds to this area (algos?)
 ]
 
-#todo[https://ieeexplore.ieee.org/abstract/document/1323963]
+#todo[review on LOD: https://ieeexplore.ieee.org/abstract/document/1323963]
+
+=== Problem
+
+
+=== Existing Solutions
+
+
+=== Ongoing Research
+
+
+=== Survey
+
