@@ -33,7 +33,7 @@
 
 #todo[review on LOD: https://ieeexplore.ieee.org/abstract/document/1323963]
 
-== Problem
+== Problem <sec:intro_problem>
 
 When generating procedural worlds for games, the designer tends to distribute resources and skills in a way that is most noticeable to the player #todo[src?]. 
 This tendency has a decisive effect in the context of visual features; nearby objects get more attention from the player and in turn the designer, while distant objects lose importance.
@@ -48,22 +48,62 @@ These need to be mixed in some way to make an engaging experience, but in a proc
 We can guide them with specific cues, but it can be challenging to generate meaningful trails such as dirt paths leading to settlements, or landmarks that signal some nearby @POI #todo[src/example from cubeworld?].
 
 Hardware limitations are a driving force as well, where grids can be particularly versatile in accommodating memory limits, but also introduce parellization opportunities.
-#todo[problem section feels incomplete]
+
+#todo[section feels incomplete]
 
 
-== Existing Solutions
+== Existing Solutions <sec:intro_solutions>
 
 Since the player viewport into the virtual world is limited, we can exploit various tricks to lighten the burden on both developers and hardware.
 Back in the day at the beginning of 3D graphics, @BSP allowed us to render complex scenes faster by avoiding unnecessary work, mainly by painting only visible polygons front-to-back #todo[src]. 
 @BSP partioning forms a tree, but we are interested in a uniform grid using a Cartesian coordinate system.
 
 Space partioning helps us with separation of concerns in the distributed system that is our game world #todo[src?]. 
-To better explain how one can utilize a hierarchy of grids, we take Minecraft as an example, and start at the highest @LOD; the voxels themselves. 
+To better explain how one can utilize a hierarchy of grids, we use _Minecraft_ as an example:
+
+1. _Blocks_ are the smallest unit i.e. the voxels.
+2. _Sections_ are portions containing $16^3$ blocks.
+3. _Chunks_ are columns of sections -- height can vary. 
+4. _Regions_ are groups of $32 times 32$ chunks.
+
+World generation is done chunk-wise and over multiple consecutive steps, all on demand as chunks appear in the player's view distance #todo[reference https://minecraft.wiki/w/World_generation#Steps].
+Structure starting points and biomes are calculated before any blocks are placed. 
+Terrain shaping follows, and is the most computationally expensive phase thanks to various density functions.
+The convenient property of these formulas is their continuity, given that most of them are multiple octaves of gradient noise with some linear arithmetic sprinkled in between.
+Density is deterministic and embarrassingly parallel, in other words.
+
+Caves and cliffs are fun and all, but we have a concurrency problem right after, referred to as decoration; 
+the various post-processing steps which place structures, vegetation, and ore -- to name a few. 
+The point of congestion is a possibility of decoration features intersecting multiple chunks, requiring well-defined order and dependency tracking to resolve.
+
+#todo[section feels incomplete]
 
 
-== Ongoing Research
+== Ongoing Research <sec:intro_research>
+
+There is no solid example of a commercially successful voxel-based game as of yet that showcases extensive use of @LOD for terrain in a way that meaningfully integrates with gameplay #todo[src?]. 
+
+As a closely related genre, space exploration games like _Space Engineers_ and _No Man's Sky_ provide long view distance almost out of necessity. 
+Striving for realistic scales without any sort of @LOD is technically infeasible #todo[src...?].
+Without a preview or map of sorts, the player would have a difficult time navigating planets or choosing where to land their ship #todo[src?].
+Both games use hierarchies of voxels to store and represent terrain, albeit visualize them with Marching Cubes #todo[link] for a smooth look, compared to the blocky look people may be used to when they think of voxels.
+
+Getting back to the _Minecraft_ scene, many recent technical achievements regarding @LOD are modifications (mods) to the base game by passionate developers in the community.
+Working with an existing codebase is difficult, and this is reflected in the way @LOD is approached here; 
+all popular mods generate @LOD from the ground truth, making it an extremely wasteful and slow process.
+#todo[write how noise-based terrain could be inherently generated at different scales]
+
+#todo[mention MC terrain diffusion mod?]
+#todo[mention MC sections and @LOD mods]
+
+#todo[mention https://veloren.net/, apparently]
 
 #todo[mention ray/path-tracing and BVH acceleration?]
 
-== Survey
 
+== Survey <sec:intro_survey>
+
+Given the state of things, we can finally revisit our problem; 
+why do procedurally generated games struggle to present the vastness of their worlds?
+This turns out to be a vast question in its own right #todo[intertwine or merge with @sec:intro_motivation?].
+A simple theory is that long view distances need too large of a technical investment for an unproven feature #todo[sources?!].
