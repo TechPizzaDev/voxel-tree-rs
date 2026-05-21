@@ -1,19 +1,27 @@
-#let style-default(short) = {
+#let style-short-default(short) = {
   let val = if text.weight <= "medium" { 15% } else { 30% }
   set text(fill: black.lighten(val))
   short
 }
 
+#let style-long-default(long) = {
+  let val = if text.weight <= "medium" { 15% } else { 30% }
+  set text(fill: black.lighten(val))
+  long
+}
+
 #let abbr = state("abbr", (:))
 #let abbr-first = state("abbr-first", ())
 #let abbr-list = state("abbr-list", ())
-#let default = (
-  space-char: sym.space.nobreak,
-  style: style-default,
-  pluralize-short: true,
+
+#let cfg-default = (
   alt-supplement: [or],
+  pluralize-short: true,
+  space-char: sym.space.nobreak,
+  style-short: style-short-default,
+  style-long: style-long-default,
 )
-#let cfg = state("abbr-config", default)
+#let cfg = state("abbr-config", cfg-default)
 
 #let stringify(text) = {
   if type(text) == str {
@@ -72,7 +80,7 @@
 }
 
 /// add an alternate definition to a single entry
-#let add-alt(short, alternate, supplement: default.alt-supplement) = context {
+#let add-alt(short, alternate, supplement: cfg-default.alt-supplement) = context {
   let key = stringify(short)
   let abbr-entry = abbr.get().at(key, default: none)
 
@@ -107,7 +115,7 @@
 
 
 /// add alternate definitions from csv file
-#let load-alt(..filename, delimiter: ",", supplement: default.alt-supplement) = {
+#let load-alt(..filename, delimiter: ",", supplement: cfg-default.alt-supplement) = {
   let entries = read-csv(..filename, delimiter)
 
   for entry in entries {
@@ -122,7 +130,8 @@
   let (key, dct) = get(short)
   if dct == none { return warn(short) }
   mark-used(key)
-  let styleit = cfg.get().style
+  
+  let styleit = cfg.get().style-short
   if query(dct.lbl).len() != 0 {
     link(dct.lbl, styleit(key))
   } else {
@@ -139,15 +148,19 @@
   // Only show alternate definition on the first appearance
   let short-content = if "alt" in dct and key in abbr-first.get() {
     [#s(key),~#dct.alt]
-  } else { s(key) }
+  } else {
+    s(key)
+  }
 
-  dct.l
-  cfg.get().space-char
-  sym.paren.l
-  sym.zwj
-  short-content
-  sym.zwj
-  sym.paren.r
+  (cfg.get().style-long)({
+    dct.l
+    cfg.get().space-char
+    sym.paren.l
+    sym.zwj
+    short-content
+    sym.zwj
+    sym.paren.r
+  })
 }
 
 /// long form of abbreviation, long-with-alt short form first
@@ -159,22 +172,26 @@
   // Only show alternate definition on the first appearance
   let long-content = if "alt" in dct and key in abbr-first.get() {
     [#dct.l,~#dct.alt]
-  } else { dct.l }
+  } else {
+    dct.l
+  }
 
-  s(key)
-  cfg.get().space-char
-  sym.paren.l
-  sym.zwj
-  long-content
-  sym.zwj
-  sym.paren.r
+  (cfg.get().style-long)({
+    s(key)
+    cfg.get().space-char
+    sym.paren.l
+    sym.zwj
+    long-content
+    sym.zwj
+    sym.paren.r
+  })
 }
 
 /// long form _only_
 #let lo(short) = context {
   let dct = get(short).at(1)
   if dct == none { return warn(short) }
-  dct.l
+  (cfg.get().style-long)(dct.l)
 }
 
 /// automatic short/long form
@@ -193,9 +210,10 @@
 
 /// short form plural
 #let pls(short) = context {
-  let styleit = cfg.get().style
   s(short)
-  if cfg.get().pluralize-short { styleit[s] }
+  if cfg.get().pluralize-short {
+    (cfg.get().style)[s]
+  }
 }
 
 /// long form plural
@@ -203,28 +221,33 @@
   let (key, dct) = get(short)
   if dct == none { return warn(short) }
   mark-first(key)
-  if dct.pl != none {
-    dct.pl
-  } else {
-    [#dct.l\s]
-  }
-  cfg.get().space-char
-  sym.paren.l
-  sym.zwj
-  pls(key)
-  sym.zwj
-  sym.paren.r
+
+  (cfg.get().style-long)({
+    if dct.pl != none {
+      dct.pl
+    } else {
+      [#dct.l\s]
+    }
+    cfg.get().space-char
+    sym.paren.l
+    sym.zwj
+    pls(key)
+    sym.zwj
+    sym.paren.r
+  })
 }
 
 /// long form plural _only_
 #let pllo(short) = context {
   let dct = get(short).at(1)
   if dct == none { return warn(short) }
-  if dct.pl != none {
-    dct.pl
-  } else {
-    [#dct.l\s]
-  }
+  (cfg.get().style-long)({
+    if dct.pl != none {
+      dct.pl
+    } else {
+      [#dct.l\s]
+    }
+  })
 }
 
 /// automatic short/long form plural
@@ -253,11 +276,13 @@
     })
     .sorted(key: it => it.s)
   if lst.len() == 0 { return }
-  let styleit = cfg.get().style
+
+  let style-short = cfg.get().style-short
+  let style-long = cfg.get().style-long
 
   let make-entry(e) = {
     let alt = if "alt" in e { [,~#e.alt] } else { none }
-    (styleit[#e.s #e.lbl], [#e.l#alt])
+    (style-short[#e.s #e.lbl], [#style-long[#e.l]#alt])
   }
 
   if columns == 2 {
@@ -273,30 +298,4 @@
     stroke: none,
     ..for entry in lst { make-entry(entry) }
   )
-}
-
-/// configure styling of abbreviations
-#let config(..args) = {
-  let supported = ("style", "space-char", "pluralize-short")
-  assert(
-    args.pos().len() == 0,
-    message: "'config' only accepts named parameters",
-  )
-  for (arg, value) in args.named() {
-    if arg not in supported {
-      panic("'config' only accepts " + supported.join(",") + " as parameters")
-    }
-  }
-
-  cfg.update(old => {
-    let update = args.named()
-    for (key, value) in update {
-      if value == none {
-        update.remove(key)
-      } else if value == auto {
-        update.at(key) = default.at(key)
-      }
-    }
-    old + update
-  })
 }

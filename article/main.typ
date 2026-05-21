@@ -8,6 +8,15 @@
 #abbreviations.define(abbr)
 
 // TODO: move to style.typ?
+
+#abbr.cfg.update(cfg => (
+  cfg
+    + (
+      style-short: it => text(rgb("#003060"), it),
+      style-long: it => text(rgb("#003060"), it),
+    )
+))
+
 #show link: it => {
   set text(blue)
   it
@@ -17,6 +26,7 @@
   set text(blue)
   it
 }
+
 
 #import "keywords.typ"
 #import "ieee-template.typ"

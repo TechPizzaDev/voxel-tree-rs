@@ -1,11 +1,11 @@
-#import "abbr-impl.typ": a, add, add-alt, asf, config, l, list, lo, load, load-alt, lsf, make, pla, pll, pllo, pls, s
+#import "abbr-impl.typ": a, add, add-alt, asf, cfg, l, list, lo, load, load-alt, lsf, make, pla, pll, pllo, pls, s
 
 /// reference show rule for QoL improved usage
 #let show-rule(body) = {
   import "abbr-impl.typ": abbr
   import "abbr.typ" as exported
   let specs = dictionary(exported)
-  for r in ("list", "load", "load-alt", "config", "add", "add-alt", "make", "show-rule") {
+  for r in ("list", "load", "load-alt", "cfg", "add", "add-alt", "make", "show-rule") {
     let _ = specs.remove(r)
   }
 
