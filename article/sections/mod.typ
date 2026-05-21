@@ -3,6 +3,8 @@
 #let body(abbr) = [
   #indices.headings
 
+  #colbreak() // Nudge intro header to next column
+
   #include "intro.typ"
 
   #include "prior_work.typ"
@@ -15,8 +17,7 @@
 
   #include "future_work.typ"
 
-  // TODO: remove pagebreak ?
-  #pagebreak()
+  #colbreak() // Nudge end-of-document headers to next column
 
   #abbr.list(title: "Glossary", columns: 1)
 

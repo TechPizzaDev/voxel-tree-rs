@@ -1,5 +1,6 @@
 #import "../markers.typ": refine, todo
 
+// TODO: rename to Algorithms?
 = Prior Work <sec:prior_work>
 
 #todo[

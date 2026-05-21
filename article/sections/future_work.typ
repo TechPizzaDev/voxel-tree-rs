@@ -3,6 +3,10 @@
 = Future Work <sec:future_work>
 
 #todo[
+  expand on @sec:intro_solutions; "generating noise at different @LOD"
+]
+
+#todo[
   few insights into potential level-of-detail support (which was the initial motivation/goal).
 
   _Future:_ properly investigate the viability of these algorithms in a real-time environment, with the crux being that it should be scalable for large procedural worlds.

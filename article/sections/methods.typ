@@ -1,5 +1,6 @@
 #import "../markers.typ": todo
 
+// TODO: rename to Experiment/Artifact?
 = Methods <sec:methods>
 
 == Rendering Framework
