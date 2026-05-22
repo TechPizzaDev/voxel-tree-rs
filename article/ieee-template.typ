@@ -14,7 +14,7 @@
   // A list of index terms to display after the abstract.
   index-terms: (),
   // The article's paper size. Also affects the margins.
-  paper-size: "us-letter",
+  paper-size: "a4",
   // The result of a call to the `bibliography` function or `none`.
   bibliography: none,
   // How figures are referred to from within the text.
@@ -167,6 +167,10 @@
 
   set std.bibliography(title: text(10pt)[References], style: "ieee")
 
+  place(top, float: true, scope: "parent", dx: 1.5pt, dy: -47pt, {
+    image("img/MAU-banner.svg", width: 293pt)
+  })
+
   // Display the paper's title and authors at the top of the page,
   // spanning all columns (hence floating at the scope of the
   // columns' parent, which is the page).
@@ -175,12 +179,17 @@
     float: true,
     scope: "parent",
     clearance: 30pt,
-    {
+    block(height: 46.5%, {
       {
-        set align(center)
-        set par(leading: 0.5em)
-        set text(size: 24pt)
-        block(below: 8.35mm, title)
+        set align(center + horizon)
+        set text(size: 18pt, weight: "bold")
+        block(title)
+      }
+
+      {
+        set align(center + horizon)
+        set text(size: 16pt)
+        block(above: 9mm, below: 9.5mm, "") // TODO: sub-title
       }
 
       // Display the authors list.
@@ -220,15 +229,39 @@
       }
 
       // Display the organizations list.
-      grid(
-        columns: (1fr,),
-        ..organizations.map(org => align(center, {
-          text(size: 11pt, org.name)
-          if "location" in org [, #org.location]
-        }))
-      )
+      if organizations.len() != 0 {
+        grid(
+          columns: (1fr,),
+          ..organizations.map(org => align(center, {
+            text(size: 11pt, org.name)
+            if "location" in org [, #org.location]
+          }))
+        )
+      }
+    }),
+  )
+
+  place(
+    left + bottom,
+    float: true,
+    scope: "parent",
+    dx: 27.5pt,
+    dy: 25pt,
+    {
+      set text(size: 12pt, font: "arial")
+      set par(leading: 0.45em)
+      [
+        Spelutveckling \
+        Kandidat \
+        30 hp \ // TODO: 15???
+        Fakulteten för teknik och samhälle \
+        Våren 2026 \
+        Huvudhandledare: Georgios Palamas
+      ]
     },
   )
+
+  pagebreak()
 
   set par(justify: true, first-line-indent: (amount: 1em, all: true), spacing: 0.5em, leading: 0.5em)
 

@@ -212,7 +212,7 @@
 #let pls(short) = context {
   s(short)
   if cfg.get().pluralize-short {
-    (cfg.get().style)[s]
+    (cfg.get().style-short)[s]
   }
 }
 

@@ -37,17 +37,8 @@
     (
       name: "Michal Piatkowski",
     ),
-    (
-      name: "Georgios Palamas",
-      department: [Supervisor],
-    ),
   ),
-  organizations: (
-    (
-      name: "Malmö University",
-      location: "Sweden",
-    ),
-  ),
+  organizations: (),
   index-terms: keywords.items,
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Fig.],
