@@ -14,12 +14,12 @@
     - structures generally have to fit the artistic vision of the given media to not feel out of place [src?].
 ]
 
-== Games
+=== Games
 
-=== Terraria
+==== Terraria
 #todo[Mention Terraria "Living Trees"? They were important inspiration after all...]
 
-=== Minecraft
+==== Minecraft
 #todo[
   Mention Minecraft mods that were used in thesis slides?
   Sounds fair to mention, considering that we can look at their code and see how large trees/structures were generated in practice. This gives us a good glimpse into upsides and pitfalls.

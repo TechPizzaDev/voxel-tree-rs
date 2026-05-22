@@ -13,7 +13,7 @@ This gave us access to high-quality libraries that provide essentials like graph
 
 == @SC:lo 
 We implemented the @SC algorithm from the ground up by following the method section for tree modeling @trees_with_spa_col. 
-@NN search is a fundamental part of the algorithm, and a $O(n^2)$ loop over the set of attractors is untenable. 
+@NNS is a fundamental part of the algorithm, and a $O(n^2)$ loop over the set of attractors is untenable. 
 
 === Data Structures
 Thus an octree library (`oktree`) was used as the first acceleration structure, getting us close to real-time generation. 
@@ -31,7 +31,7 @@ An aspect we paid less attention to, but is worth noting, is tree balance and qu
 
 So far, neither octrees or spatial hashing proved effective against slowdown caused by smaller segment size $D$. 
 At some point, our supervisor seemed to recognize this problem as related to @DBSCAN:s @dbscan_clustering, which led us to our final structure of choice: the R\*-tree. 
-Using an existing library (`rstar`), we managed to further decrease lookup time, trivialize construction cost while creating an optimal tree since we have all points upfront, all while maintaining fast @NN search regardless of influence radius. 
+Using an existing library (`rstar`), we managed to further decrease lookup time, trivialize construction cost while creating an optimal tree since we have all points upfront, all while maintaining fast @NNS regardless of influence radius. 
 This was now a functionally faithful reimplementation of the @SC algorithm.
 
 #linebreak()
