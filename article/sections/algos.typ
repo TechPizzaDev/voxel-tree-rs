@@ -1,6 +1,6 @@
 #import "../markers.typ": refine, todo
 
-= Algorithms <sec:algorithms>
+= Algorithms <sec:algos>
 
 #todo[
   intro paragraph:
