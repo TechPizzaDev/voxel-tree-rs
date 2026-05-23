@@ -22,6 +22,9 @@
   2. attempt reaching parity with @self_organizing_tree_synthesis in particular
 ]
 
+== Persistent Homology
+#todo[Measure/identify tree shape with "barcodes" @persistent_homology]
+
 #todo[
   https://github.com/peterbraden/genetic-lisa
   - related to @persistent_homology and 

@@ -7,6 +7,8 @@
 
   #include "intro.typ"
 
+  #include "concepts/mod.typ"
+
   #include "prior_work.typ"
 
   #include "methods.typ"

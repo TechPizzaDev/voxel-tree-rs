@@ -35,3 +35,15 @@
   - quick poisson disc sample for initial placement?
   - elaborate on how terrain can shape placement
 ]
+
+=== Games
+
+==== Terraria
+#todo[Mention Terraria "Living Trees"? They were important inspiration after all...]
+
+==== Minecraft
+#todo[
+  Mention Minecraft mods that were used in thesis slides?
+  Sounds fair to mention, considering that we can look at their code and see how large trees/structures were generated in practice. 
+  This gives us a good glimpse into upsides and pitfalls.
+]

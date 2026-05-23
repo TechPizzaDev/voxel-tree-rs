@@ -12,8 +12,5 @@
     ("NCA", [Neural Cellular Automata]),
     ("SC", [Space Colonization]),
     ("SDF", [Signed Distance Field]),
-    ("POI", [Point of Interest]),
-    ("BSP", [Binary Space Partitioning]),
-    ("DBSCAN", [Density-Based Spatial Clustering of Applications with Noise])
   )
 }
