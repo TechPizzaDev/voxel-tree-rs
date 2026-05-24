@@ -251,12 +251,12 @@
       set text(size: 12pt, font: "arial")
       set par(leading: 0.45em)
       [
-        Spelutveckling \
-        Kandidat \
-        30 hp \ // TODO: 15???
-        Fakulteten för teknik och samhälle \
-        Våren 2026 \
-        Huvudhandledare: Georgios Palamas
+        Game Development \
+        Bachelor \
+        15 hp \
+        Faculty of Technology and Society \
+        Spring 2026 \
+        Supervisor: Georgios Palamas
       ]
     },
   )
