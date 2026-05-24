@@ -14,7 +14,7 @@
 #include "lod.typ"
 
 == Approximation <sec:concept_approx>
-#include "approx.typ"
+#include "lod.typ"
 
 == Environmental Effects
 #include "env_effects.typ"
