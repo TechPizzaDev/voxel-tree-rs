@@ -36,7 +36,7 @@
   - elaborate on how terrain can shape placement
 ]
 
-=== Games
+== Games
 
 ==== Terraria
 #todo[Mention Terraria "Living Trees"? They were important inspiration after all...]

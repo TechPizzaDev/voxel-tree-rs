@@ -9,9 +9,9 @@
 
   #include "concepts/mod.typ"
 
-  #include "prior_work.typ"
+  #include "algos.typ"
 
-  #include "methods.typ"
+  #include "artifacts.typ"
 
   #include "results.typ"
 

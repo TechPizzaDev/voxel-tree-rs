@@ -23,7 +23,7 @@ Realising that we worked with volumes and not just points,
 we pursued a spatial hash with cells that each referenced all intersecting attractors. 
 These amortized lookups gave a decent speedup, but increased both memory usage and removal time due to excessive duplication. 
 Cost remained high even while utilizing packed references as small as 16-bit; enough for $65535$ attractors, or $2^16$ indices minus $1$ tombstone. 
-Commonly referred to as a _memory arena_, it also helps sidestep lifetime issues and reduces data movement #todo[src?].
+Commonly referred to as a _memory arena_, it allows self-referential indices and reduces data movement #todo[src?].
 
 The structures we explored usually trade construction time and memory for improved lookup times. 
 This was the reason for us looking beyond Voronoi diagrams in the first place, specifically with the expensive Delaunay triangulation step needed to construct them. 

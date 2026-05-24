@@ -2,15 +2,11 @@
 
 = Algorithms <sec:algos>
 
+Methods listed in this section follow the idea outlined by @sec:concept_approx.
+
 #todo[
   intro paragraph:
   - real-time generation for games
-  - not focused on realism, but resembles life (bending the rules)
-
-  - how did i manage to mention relativity... (subatomic scales are not needed)
-  - we don't need to simulate life to recreate it
-    - this originated from the @SC authors being proud of their algo "growing like actual trees"
-    - structures generally have to fit the artistic vision of the given media to not feel out of place [src?].
 ]
 
 == @GNG:lo
@@ -23,10 +19,14 @@
   On the topic of @GNG, we also explored the @LOD aspect and found interesting applications for compressing point cloud colors @neural_gas_color_object_reconstruct, but without relevance to _growing_ interesting trees.
 ]
 
-== @SC:lo
+== @SC:lo <sec:algos_sc>
 #todo[
   we can classify the methods, starting with @SC:
   this is a space-filling algo, what else exists?
+]
+
+#todo[
+  The authors of @trees_with_spa_col are proud that their solution "grows like actual trees". Ties to @sec:concept_approx.
 ]
 
 #todo[
@@ -48,12 +48,3 @@
 #todo[Explain the algo and how it may be an interesting avenue for vegetation @growing_neural_cellular_automata]
 
 #todo[Mention other attempts and uses outside of trees @growing_3d_artefacts @learning_generate_3d_shapes]
-
-== Environmental Effects
-#todo[Explain L-systems mentioned in @compelling_procedural_3d_env_landscapes]
-
-// TODO: find more papers?!
-
-#todo[Explain realistic tree models found in @procedural_diverse_trees and @self_organizing_tree_synthesis]
-
-#todo[Explain how environment/weather/light affects tree growth @windy_tree_stress_response]

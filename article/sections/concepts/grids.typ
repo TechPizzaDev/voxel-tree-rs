@@ -1,8 +1,7 @@
 #import "../../markers.typ": todo
 
-Grids that partition space can be implicit like rooms in a dungeon, 
-or explicit like individual voxels in terrain. 
-Herein lies the tradeoff; our grid size is one of the deciding factors on how the designer spends their resources.
+Partitioning space into grids can be implicit like rooms in a dungeon, or explicit like individual voxels in terrain. 
+Herein lies the tradeoff; grid size becomes one of the deciding factors on how the designer spends their resources.
 
 Take some of the possible features that can appear in an infinite sandbox game like 
 terrain, biomes, vegetation, or structures #todo[src?] -- 
