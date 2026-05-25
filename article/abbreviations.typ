@@ -12,5 +12,6 @@
     ("NCA", [Neural Cellular Automata]),
     ("SC", [Space Colonization]),
     ("SDF", [Signed Distance Field]),
+    ("ML", [Machine Learning]),
   )
 }

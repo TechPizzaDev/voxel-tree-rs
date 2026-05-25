@@ -9,7 +9,7 @@
 
   #include "concepts/mod.typ"
 
-  #include "algos.typ"
+  #include "algos/mod.typ"
 
   #include "artifacts.typ"
 
@@ -18,6 +18,8 @@
   #include "discussion.typ"
 
   #include "future_work.typ"
+
+  #include "conclusion.typ"
 
   #colbreak() // Nudge end-of-document headers to next column
 

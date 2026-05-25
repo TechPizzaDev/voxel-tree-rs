@@ -1,15 +1,15 @@
-#import "../markers.typ": refine, todo
+#import "../../markers.typ": refine, todo
 
 = Algorithms <sec:algos>
 
-Methods listed in this section follow the idea outlined by @sec:concept_approx.
+Methods listed in this section follow the ideology outlined by @sec:concept_approx.
 
 #todo[
   intro paragraph:
   - real-time generation for games
 ]
 
-== @GNG:lo
+== @GNG:lo <sec:algos_gng>
 #refine[
   Supervisor suggested checking out @GNG networks @growing_neural_gas when the initial goal was established.
   Even after exploring various @GNG implementations, we concluded that @GNG was not particularly relevant to the subject of growing trees, nor was it effective for real-time even with major optimizations @growing_neural_gas_efficient.
@@ -43,8 +43,11 @@ Methods listed in this section follow the idea outlined by @sec:concept_approx.
   - evaluate performance claims in @ckd_tree
 ]
 
-== @NCA:lo
+== @NCA:lo <sec:algos_nca>
 
 #todo[Explain the algo and how it may be an interesting avenue for vegetation @growing_neural_cellular_automata]
 
 #todo[Mention other attempts and uses outside of trees @growing_3d_artefacts @learning_generate_3d_shapes]
+
+== Lindenmayer Systems <sec:algos_l_system>
+#include "l_system.typ"

@@ -2,12 +2,12 @@
 
 = Future Work <sec:future_work>
 
-== Scalable Noise // TODO: move to bottom?
+== Scalable Noise <sec:future_noise> // TODO: move to bottom?
 #todo[
   expand on @sec:intro_solutions; "generating noise at different @LOD"
 ]
 
-== @LOD:lo
+== Miniaturization <sec:future_mini>
 #todo[
   few insights into potential level-of-detail support (which was the initial motivation/goal).
 

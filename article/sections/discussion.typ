@@ -3,6 +3,10 @@
 = Discussion <sec:discussion>
 
 #todo[
+  this involved a lot of sense-making (apparently hot topic for modern systems and black-boxes)
+]
+
+#todo[
   - Compare our performance with original @SC Voronoi structure  (slowest construction, balanced storage, balanced lookup time).
 
   - Compare our customizability with mentioned papers regarding tree modeling.
@@ -47,3 +51,15 @@
   Sounds fair to mention, considering that we can look at their code and see how large trees/structures were generated in practice. 
   This gives us a good glimpse into upsides and pitfalls.
 ]
+
+
+== Neural Networks
+@ML was a recurring topic during our search.
+The pool of papers was difficult to filter from the sheer prevalence of @ML. 
+Perhaps unsurprising was the interplay between point clouds of terrain and vision systems for self-driving cars, but we digress.
+Since our priorities float around real-time, we generally tried to look away from solutions such as transformers or diffusion.
+Today's techniques leave a lot to be desired across the board, as in performance, efficiency, efficacy, and training #todo[src?].
+The controllability from a designer perspective is also low.
+
+This did not stop others from attempting to replace noise-based terrain with something more aesthetic #todo[mention MC terrain diffusion mod?].
+#link("https://github.com/xandergos/terrain-diffusion-mc")

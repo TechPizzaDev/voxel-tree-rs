@@ -21,14 +21,13 @@ Density calculations are deterministic and embarrassingly parallel, in other wor
 
 Caves and cliffs are fun and all, 
 but there is a concurrency problem soon after; 
-the decoration post-processing steps that may place structures, vegetation, and ore -- to name a few. 
+the decoration post-processing steps may place structures, vegetation, and ore -- to name a few. 
 The point of congestion is a possibility of decorations intersecting multiple chunks, 
 which is solved by tracking such dependencies and finalizing later.
 
-#todo[section feels somewhat incomplete]
-
 === Rendering
 Chunks render only when fully generated, 
-which is normal across games and avoids the overhead of rapidly shifting previews.
+which is normal for chunking since it avoids the substantial overhead of maintaning rapidly shifting previews.
+
 
 #todo[mention rendering, and transition into next section]
