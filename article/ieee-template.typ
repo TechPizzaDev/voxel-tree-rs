@@ -86,6 +86,7 @@
         bottom: (64pt / 279mm) * 100%,
       )
     },
+    numbering: "1"
   )
 
   // Configure equation numbering and spacing.
@@ -248,15 +249,15 @@
     dx: 27.5pt,
     dy: 25pt,
     {
-      set text(size: 12pt, font: "arial")
+      set text(size: 12pt)
       set par(leading: 0.45em)
       [
-        Game Development \
-        Bachelor \
-        15 hp \
-        Faculty of Technology and Society \
+        Computer Science \
+        Bachelor's Thesis \
+        15 ECTS \
         Spring 2026 \
-        Supervisor: Georgios Palamas
+        Supervisor: Georgios Palamas \
+        Examiner: 
       ]
     },
   )
