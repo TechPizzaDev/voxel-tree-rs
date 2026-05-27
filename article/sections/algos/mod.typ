@@ -44,10 +44,7 @@ Methods listed in this section follow the ideology outlined by @sec:concept_appr
 ]
 
 == @NCA:lo <sec:algos_nca>
-
-#todo[Explain the algo and how it may be an interesting avenue for vegetation @growing_neural_cellular_automata]
-
-#todo[Mention other attempts and uses outside of trees @growing_3d_artefacts @learning_generate_3d_shapes]
+#include "nca.typ"
 
 == Lindenmayer Systems <sec:algos_l_system>
 #include "l_system.typ"

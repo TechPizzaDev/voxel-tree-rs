@@ -6,7 +6,7 @@ Herein lies the tradeoff; grid size becomes one of the deciding factors on how t
 Take some of the possible features that can appear in an infinite sandbox game like 
 terrain, biomes, vegetation, or structures #todo[src?] -- 
 listed roughly from large to small. 
-These need to be mixed in some way to make an engaging experience, but in a procedural world, we don't know where the player will venture or the order in which they encounter features. 
+These need to be mixed in some way to make an engaging experience, but in a procedural world, we do not know where the player will venture or the order in which they encounter features. 
 We can guide them with specific cues, 
 but it can be challenging to generate meaningful trails, such as 
 desire paths stretching across settlements, or landmarks that signal the presence of some nearby point of interest.

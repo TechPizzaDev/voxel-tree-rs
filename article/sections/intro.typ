@@ -8,7 +8,10 @@ however the _survival sandbox_ genre sticks out as particularly demanding across
 
 The initial concept for this thesis went along the lines of "procedural noise-based terrain at massive scale", 
 stemming from the lack of real-time procedural game worlds that utilize their endless generators for extreme view distances. 
-Improving on this feature gap given our limited time turned out vast and vexing, even with basis in prior art #todo[link _No Man's Sky_, _Minecraft_, etc.]. 
+Improving on this feature gap given our limited time turned out vast and vexing, even with basis in prior art like 
+_Minecraft_ #footnote[https://www.minecraft.net] or 
+_No Man's Sky_ #footnote[https://www.nomanssky.com], 
+#todo[etc.]. 
 This doubt lead to an early narrowing in scope towards "procedural trees", pivoting us into familiar yet very relevant territory.      
 
 Vegetation can make for effective decoration after all, 
@@ -19,8 +22,16 @@ We briefly continue this under @sec:future_barcode.
 
 == Problem <sec:intro_problem>
 
-With the scope in place, we can gaze at what it takes to bring trees up to speed for real-time rendering.
+With the scope in place, we need to gaze at what it takes to bring us up to speed for real-time rendering.
+There is unfortunately some level of "chicken and egg" paradox at play here, 
+where resource unavailability usually forces us into simpler "good enough" solutions #todo[src], see @sec:concept_design.
+Trees are common and recognizable vegetation in games, 
+but often rely on handcrafted, reusable, and highly stylized assets #todo[src?]. 
+To address the gap in a manageable manner, we explore the potential of procedural generation to break visual monotony, and ideally reducing cost of development.
 
+*RQ*: Which algorithms support real-time generation of trees in a performant manner? 
+
+#todo[mention modded minecraft / inspired by big "sacred rubber tree"?]
 
 
 == Solutions <sec:intro_solutions>
@@ -28,14 +39,20 @@ With the scope in place, we can gaze at what it takes to bring trees up to speed
 Since the player viewport into the virtual world is limited, 
 we can exploit various tricks to lighten the burden on both developers and hardware.
 These techniques usually fall under the term @LOD, explained by @sec:concept_lod. 
+The concept applies generally across game development, 
+but is notably meaningful for trees based on their relevance in scenery, and high frequency as the essential component of forests.
+Forests are therefore notoriously expensive to develop at high quality.
 
 #todo[billboards bad]
+
+#todo[heightmaps pretty bad too]
 
 There is as of yet no solid example of a commercial game that  successfully showcases extreme view distance in a way that meaningfully integrates with gameplay #todo[src?]. 
 Games are a primary source of invention here, which means smaller representation of procedural features to borrow from.
 
 Under the space-themed part of our genre, exploration games like 
-_Space Engineers_ and _No Man's Sky_ 
+_No Man's Sky_ and
+_Space Engineers_ #footnote[https://www.spaceengineersgame.com/home]
 provide long view distance almost out of necessity. 
 Striving for realistic scales of the universe without any sort of @LOD is technically infeasible.
 Without a preview or map of sorts #todo[mention Twilight Forest map], 
@@ -51,8 +68,8 @@ compared to the blocky look people may be used to when they think of voxels #tod
 Around the _Minecraft_ scene, recent technical achievements regarding @LOD are modifications (mods) to the base game, made by the community.
 Working with a proprietary codebase is difficult, and this is reflected in the way @LOD is approached; 
 popular mods, such as 
-#link("https://gitlab.com/distant-horizons-team/distant-horizons", [_Distant Horizons_]) and 
-#link("https://github.com/MCRcortex/voxy", [_Voxy_]) 
+_Distant Horizons_ #footnote[https://gitlab.com/distant-horizons-team/distant-horizons] and 
+_Voxy_ #footnote[https://github.com/MCRcortex/voxy] 
 generate simplified geometry from the ground truth, 
 which can be framed as a mix of view-dependent and hierarchical @LOD.
 The obvious drawback is how expensive and wasteful this process can be, 
@@ -63,7 +80,7 @@ pushing theories to @sec:future_noise on how noise could be inherently generated
 #todo[mention https://veloren.net/, apparently]
 
 #todo[mention ray/path-tracing and BVH acceleration? especially Nanite from UE5, and voxel-Lumen for foliage.
-ties into @sec:concept_approx]
+ties into @sec:concept_approx, but a bit out of our paradigm]
 
 
 == Approach <sec:intro_survey>
