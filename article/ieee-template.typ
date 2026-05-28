@@ -71,6 +71,62 @@
     spacing: 100%,
   )
 
+  set page(
+    paper: paper-size,
+    margin: (x: 41.5pt, top: 80.51pt, bottom: 89.51pt),
+  )
+
+  place(top, float: true, scope: "parent", dx: 1.5pt, dy: -47pt, {
+    image("img/MAU-banner.svg", width: 293pt)
+  })
+
+  place(
+    top + center,
+    float: true,
+    scope: "parent",
+    clearance: 30pt,
+    block(height: 46.5%, {
+      {
+        set align(horizon)
+        set text(size: 18pt, weight: "bold")
+        block(below: 9mm, title)
+      }
+
+      // Display the authors list.
+      for i in range(calc.ceil(authors.len() / 3)) {
+        let end = calc.min((i + 1) * 3, authors.len())
+        let slice = authors.slice(i * 3, end)
+        grid(
+          columns: slice.len() * (1fr,),
+          gutter: 12pt,
+          ..slice.map(author => align(center, {
+            text(size: 16pt, author.name)
+          }))
+        )
+      }
+    })
+  )
+
+  place(
+    left + bottom,
+    float: true,
+    scope: "parent",
+    dx: 27.5pt,
+    dy: 25pt,
+    {
+      set text(size: 12pt)
+      set par(leading: 0.45em)
+      [
+        Computer Science \
+        Bachelor's Thesis \
+        15 ECTS \
+        Spring 2026 \
+        Supervisor: Georgios Palamas \
+        Examiner: 
+      ]
+    },
+  )
+
   // Configure the page and multi-column properties.
   set columns(gutter: 12pt)
   set page(
@@ -88,6 +144,9 @@
     },
     numbering: "1"
   )
+
+  // Reset page counter
+  counter(page).update(1)
 
   // Configure equation numbering and spacing.
   set math.equation(numbering: "(1)")
@@ -168,10 +227,6 @@
 
   set std.bibliography(title: text(10pt)[References], style: "ieee")
 
-  place(top, float: true, scope: "parent", dx: 1.5pt, dy: -47pt, {
-    image("img/MAU-banner.svg", width: 293pt)
-  })
-
   // Display the paper's title and authors at the top of the page,
   // spanning all columns (hence floating at the scope of the
   // columns' parent, which is the page).
@@ -180,18 +235,10 @@
     float: true,
     scope: "parent",
     clearance: 30pt,
-    block(height: 46.5%, {
-      {
-        set align(center + horizon)
-        set text(size: 18pt, weight: "bold")
-        block(title)
-      }
-
-      {
-        set align(center + horizon)
-        set text(size: 16pt)
-        block(above: 9mm, below: 9.5mm, "") // TODO: sub-title
-      }
+    {
+      set align(center)
+      set par(leading: 0.5em)
+      block(below: 6mm, text(size: 18pt, weight: "bold", title))
 
       // Display the authors list.
       set par(leading: 0.6em)
@@ -203,7 +250,7 @@
           columns: slice.len() * (1fr,),
           gutter: 12pt,
           ..slice.map(author => align(center, {
-            text(size: 11pt, author.name)
+            text(size: 13pt, author.name)
             if "department" in author [
               (#emph(author.department))
             ]
@@ -234,35 +281,14 @@
         grid(
           columns: (1fr,),
           ..organizations.map(org => align(center, {
-            text(size: 11pt, org.name)
+            set text(size: 11pt)
+            [#org.name]
             if "location" in org [, #org.location]
           }))
         )
       }
-    }),
+    }
   )
-
-  place(
-    left + bottom,
-    float: true,
-    scope: "parent",
-    dx: 27.5pt,
-    dy: 25pt,
-    {
-      set text(size: 12pt)
-      set par(leading: 0.45em)
-      [
-        Computer Science \
-        Bachelor's Thesis \
-        15 ECTS \
-        Spring 2026 \
-        Supervisor: Georgios Palamas \
-        Examiner: 
-      ]
-    },
-  )
-
-  pagebreak()
 
   set par(justify: true, first-line-indent: (amount: 1em, all: true), spacing: 0.5em, leading: 0.5em)
 
@@ -271,7 +297,8 @@
     set par(spacing: 0.45em, leading: 0.45em)
     set text(9pt, weight: 700, spacing: 150%)
 
-    [_Abstract_---#h(weak: true, 0pt)#abstract]
+    [_Abstract_---#h(weak: true, 0pt)#abstract] 
+    v(0.45em)
 
     if index-terms != () {
       parbreak()

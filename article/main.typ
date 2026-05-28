@@ -30,7 +30,7 @@
 
 #import "keywords.typ"
 #import "ieee-template.typ"
-#show: ieee-template.ieee.with(
+#show: ieee-template.ieee.with( 
   title: [Procedural trees for real-time environments],
   abstract: include "sections/abstract.typ",
   authors: (
@@ -38,7 +38,12 @@
       name: "Michal Piatkowski",
     ),
   ),
-  organizations: (),
+  organizations: (
+    (
+      name: "Malmö University",
+      location: "Sweden",
+    ),
+  ),
   index-terms: keywords.items,
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Fig.],
