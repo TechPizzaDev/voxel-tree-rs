@@ -10,8 +10,7 @@ The initial concept for this thesis went along the lines of "procedural noise-ba
 stemming from the lack of real-time procedural game worlds that utilize their endless generators for extreme view distances. 
 Improving on this feature gap given our limited time turned out vast and vexing, even with basis in prior art like 
 _Minecraft_ #footnote[https://www.minecraft.net] or 
-_No Man's Sky_ #footnote[https://www.nomanssky.com], 
-#todo[etc.]. 
+#box[_No Man's Sky_] #footnote[https://www.nomanssky.com]. 
 This doubt lead to an early narrowing in scope towards "procedural trees", pivoting us into familiar yet very relevant territory.      
 
 Vegetation can make for effective decoration after all, 

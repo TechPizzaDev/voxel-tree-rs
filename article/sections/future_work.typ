@@ -2,10 +2,12 @@
 
 = Future Work <sec:future_work>
 
-== Scalable Noise <sec:future_noise> // TODO: move to bottom?
+
+== Scalable Noise <sec:future_noise>
 #todo[
   expand on @sec:intro_solutions; "generating noise at different @LOD"
 ]
+
 
 == Miniaturization <sec:future_mini>
 #todo[
@@ -14,7 +16,11 @@
   _Future:_ properly investigate the viability of these algorithms in a real-time environment, with the crux being that it should be scalable for large procedural worlds.
 ]
 
-\
+=== Scalable @NCA:s
+#todo[Apparently scalable beyond the individual cells somehow? can't tell how easy that is, but seemed interesting]
+
+
+== Better Rendering <sec:future_rendering>
 
 #todo[minimal rendering framework; the trees are not interesting/novel compared to prior work, and visualization of experiments was hindered by the framework.
 
@@ -23,6 +29,7 @@
   1. spend less time in debugging/testing
   2. attempt reaching parity with @self_organizing_tree_synthesis in particular
 ]
+
 
 == Persistent Homology <sec:future_barcode>
 #todo[Measure/identify tree shape with "barcodes" @persistent_homology]
