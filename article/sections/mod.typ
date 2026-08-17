@@ -1,12 +1,6 @@
 #import "indices.typ"
 
 #let body(abbr) = [
-  #colbreak() // Nudge index to next column
-
-  #indices.headings
-
-  #colbreak() // Nudge intro header to next column
-
   #include "intro.typ"
 
   #include "concepts/mod.typ"

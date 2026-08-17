@@ -20,6 +20,7 @@
   // How figures are referred to from within the text.
   // Use "Figure" instead of "Fig." for computer-related publications.
   figure-supplement: [Fig.],
+  prefix: none,
   // The paper's content.
   body,
 ) = {
@@ -291,6 +292,8 @@
   )
 
   set par(justify: true, first-line-indent: (amount: 1em, all: true), spacing: 0.5em, leading: 0.5em)
+
+  prefix
 
   // Display abstract and index terms.
   if abstract != none {

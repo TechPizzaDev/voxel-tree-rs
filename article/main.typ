@@ -27,7 +27,7 @@
   it
 }
 
-
+#import "sections/indices.typ"
 #import "keywords.typ"
 #import "ieee-template.typ"
 #show: ieee-template.ieee.with( 
@@ -47,6 +47,11 @@
   index-terms: keywords.items,
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Fig.],
+  prefix: {
+    indices.headings
+
+    colbreak() // Nudge intro header to next column
+  },
 )
 
 #import "sections/mod.typ": body
