@@ -1,4 +1,4 @@
-#import "../markers.typ": todo
+#import "../markers.typ": todo, refine
 
 = Artifacts <sec:artifacts>
 
@@ -63,7 +63,7 @@ An example that is more relevant to us, and closer to the tail end of the conten
 
 
 == @NCA:lo
-#todo[
+#refine[
   Describe the experiment around @NCA @growing_3d_artefacts: 
   - Reproducing the open-source build found on GitHub by updating Python packages. 
   - Exploring the provided Jupyter notebook.
@@ -72,16 +72,17 @@ An example that is more relevant to us, and closer to the tail end of the conten
 
 ]
 
-#todo[
-  - black box / related to evolutionary algo
-  - difficult for algo to settle on novel shapes
+#refine[
+  - This algo is a black-box, and may be related to evolutionary algos.
+  - This algo struggles to settle on novel shapes, i.e. anything outside training data.
 ]
 
 #todo[
-  - pruning methods; why is it important, how to measure?
-  - how easy is it to control appearance?
+  - Pruning methods; why is it important, how to measure?
 
-  - run a test? benchmark?
+  - How easy is it to control appearance?
 
-  - would like to see: insights around @NCA loss function (helps reach a goal), not particulary a ready product
+  - Run a test? Benchmark?
+
+  - Insights around @NCA loss function (helps reach a goal), not particulary a ready product.
 ]

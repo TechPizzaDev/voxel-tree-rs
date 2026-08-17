@@ -3,7 +3,7 @@
 = Discussion <sec:discussion>
 
 #todo[
-  this involved a lot of sense-making (apparently hot topic for modern systems and black-boxes)
+  This involved a lot of sense-making (apparently hot topic for modern systems and black-boxes)
 ]
 
 #todo[
@@ -24,20 +24,20 @@
 #todo[
   - Compare @SC vs shadow propagation @self_organizing_tree_synthesis
 
-  - Light and shadow are key to creating nature-like trees. 
+  - Light and shadow are key to creating natural trees. 
 ]
 
 #todo[
-  Discuss future work from @SC papers: convert scanned point clouds of real trees to algo params
+  Discuss future work from @SC papers: convert scanned point clouds of real trees to algo params?
 ]
 
 #todo[
-  Explain relevance of environment in tree growth:
+  Explain relevance of environment in tree growth (this could go into future work...):
   - Local species (pests, competition, mycelium) may act as biomes to dictate tree attributes.
 
   Generating a population of trees:
   - quick poisson disc sample for initial placement?
-  - elaborate on how terrain can shape placement
+  - elaborate on how terrain can shape placement.
 ]
 
 == Games
@@ -53,7 +53,7 @@
 ]
 
 
-== Neural Networks
+== Neural Networks <sec:discussion_nn>
 Machine learning was a recurring topic during our search, 
 and the pool of papers was difficult to filter from the frequent occurence. 
 Perhaps unsurprising was the interplay between point clouds of terrain and vision systems for self-driving cars, but we digress.

@@ -3,12 +3,12 @@
 = Results <sec:results>
 
 == @SC:lo
-#todo[@SC reimplementation:
-  - We tested custom spatial hash buckets and octrees (slowest construction, unbalanced storage, unbalanced lookup time).
+#refine[@SC reimplementation:
+  - We tested spatial hash buckets, and our attempt suffered from data duplication and high overlap during lookups.
+
+  - We also tested octrees, which had the highest construction time, unbalanced storage, and unbalanced lookup time.
   
-  Elaborate on
-    - default vs. tuned insertion parameters for R\* tree
-    - customized spatial hashing
+  - Insertion parameters for our R\* tree can be tuned, but only for marginal gains.
 ]
 
 #let sc_img(source, caption) = figure(
@@ -65,11 +65,9 @@
   caption: "Data structure metrics for 20000 randomly distributed attractors.",
 ) <data_structure_metrics>
 
-#todo[
-  Hardware: 
-  - CPU: AMD Ryzen 7 7700X 8-Core
-  - RAM: $2 times 32$ GB, 5200 MT/s, CL32
-]
+Hardware: 
+- CPU: AMD Ryzen 7 7700X 8-Core
+- RAM: $2 times 32$ GB, DDR5 5200 MT/s, CL32
 
 == @NCA:lo
 #refine[Preliminary result around @NCA @growing_3d_artefacts:

@@ -2,7 +2,7 @@
 
 = Algorithms <sec:algos>
 
-Methods listed in this section follow the ideology outlined by @sec:concept_approx.
+Methods listed in this section vaguely follow the ideology outlined by @sec:concept_approx.
 
 #todo[
   intro paragraph:
@@ -14,7 +14,8 @@ Methods listed in this section follow the ideology outlined by @sec:concept_appr
   Supervisor suggested checking out @GNG networks @growing_neural_gas when the initial goal was established.
   Even after exploring various @GNG implementations, we concluded that @GNG was not particularly relevant to the subject of growing trees, nor was it effective for real-time even with major optimizations @growing_neural_gas_efficient.
 
-  Possible uses we came up with were related to creating bounding geometry for tree crowns. These could be used to spawn @SC attractors (more on that later), or to construct meshes for rendering (which grew out of scope).
+  Possible uses we came up with were related to creating bounding geometry for tree crowns by training it on natural shapes. 
+  These could be used to spawn @SC attractors (more on that later), or to construct meshes for rendering (which grew out of scope).
 
   On the topic of @GNG, we also explored the @LOD aspect and found interesting applications for compressing point cloud colors @neural_gas_color_object_reconstruct, but without relevance to _growing_ interesting trees.
 ]
@@ -26,7 +27,7 @@ Methods listed in this section follow the ideology outlined by @sec:concept_appr
 ]
 
 #todo[
-  The authors of @trees_with_spa_col are proud that their solution "grows like actual trees". Ties to @sec:concept_approx.
+  Mention how authors of @trees_with_spa_col are proud that their solution "grows like actual trees". This ties to @sec:concept_approx.
 ]
 
 #todo[

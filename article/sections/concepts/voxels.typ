@@ -1,4 +1,4 @@
-#import "../../markers.typ": todo
+#import "../../markers.typ": todo, refine
 
 Partioning space can help us with _separation of concerns_ /* link https://doi.org/10.1515/JISYS.2006.15.1-4.153 ?*/ in the distributed system that is our game world #todo[src?]. 
 To better explain how one can utilize a hierarchy of grids, 
@@ -30,4 +30,4 @@ Chunks render only when fully generated,
 which is normal for chunking since it avoids the substantial overhead of maintaning rapidly shifting previews.
 
 
-#todo[mention rendering, and transition into next section]
+#refine[rendering mentioned; now transition into next section]

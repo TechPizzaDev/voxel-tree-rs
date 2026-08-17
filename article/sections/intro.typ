@@ -26,7 +26,7 @@ There is unfortunately some level of "chicken and egg" paradox at play here,
 where resource unavailability usually forces us into simpler "good enough" solutions #todo[src], see @sec:concept_design.
 Trees are common and recognizable vegetation in games, 
 but often rely on handcrafted, reusable, and highly stylized assets #todo[src?]. 
-To address the gap in a manageable manner, we explore the potential of procedural generation to break visual monotony, and ideally reducing cost of development.
+To address the gap in a manageable manner, we explore the potential of procedural generation to break visual uniformity, ideally without increasing development costs.
 
 *RQ*: Which algorithms support real-time generation of trees in a performant manner? 
 
@@ -85,7 +85,7 @@ For something broader, we have Unreal Engine technologies like Nanite and Lumen,
 Nanite handles highly detailed geometry, and Lumen simulates light and shadow on top.
 Recent upgrades to Lumen allowed it to more efficiently deal with foliage by using voxelized approximations.
 This is still an emerging area of research, since ray- and path-tracing has traditionally been, and still is, held back by hardware limitations.
-#todo[ties into @sec:concept_approx, but a bit out of our paradigm]
+#refine[This ties into @sec:concept_approx, but slightly outside our paradigm.]
 
 
 == Approach <sec:intro_survey>
