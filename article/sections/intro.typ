@@ -30,7 +30,7 @@ To address the gap in a manageable manner, we explore the potential of procedura
 
 *RQ*: Which algorithms support real-time generation of trees in a performant manner? 
 
-#todo[mention modded minecraft / inspired by big "sacred rubber tree"?]
+#todo[mention modded minecraft / inspired by big "sacred rubber tree"? (although those all look the same)]
 
 
 == Solutions <sec:intro_solutions>
@@ -39,13 +39,15 @@ Since the player viewport into the virtual world is limited,
 we can exploit various tricks to lighten the burden on both developers and hardware.
 These techniques usually fall under the term @LOD, explained by @sec:concept_lod. 
 The concept applies generally across game development, 
-but is notably meaningful for trees based on their relevance in scenery, and high frequency as the essential component of forests.
-Forests are therefore notoriously expensive to develop at high quality.
+but is notably meaningful for trees based on their relevance in scenery, and high frequency as the essential part of forests.
 
-#todo[billboards bad]
+Realistic forests are notoriously expensive to develop and draw at high quality.
+This lead to workarounds like billboards, which are pre-rendered 2D sprites, usually with normal maps to help lighting. 
+As for the ground itself, distant terrain can be estimated with heightmaps.
+Simplifying geometry like this is usually difficult to stylize in a dynamic environment without noticable shadow artifacts or pop-in. 
+#todo[sources!]
 
-#todo[heightmaps pretty bad too]
-
+#refine[]
 There is as of yet no solid example of a commercial game that  successfully showcases extreme view distance in a way that meaningfully integrates with gameplay #todo[src?]. 
 Games are a primary source of invention here, which means smaller representation of procedural features to borrow from.
 
@@ -54,7 +56,7 @@ _No Man's Sky_ and
 _Space Engineers_ #footnote[https://www.spaceengineersgame.com/home]
 provide long view distance almost out of necessity. 
 Striving for realistic scales of the universe without any sort of @LOD is technically infeasible.
-Without a preview or map of sorts #todo[mention Twilight Forest map], 
+Without a preview or map of sorts (#todo[mention Twilight Forest map that reveals biomes and structures]), 
 the player would have a difficult time navigating planets, 
 let alone choosing where to land their ship while not crashing into mountains.
 Both games use hierarchies of voxels to store and represent terrain, 
@@ -78,12 +80,17 @@ pushing theories to @sec:future_noise on how noise could be inherently generated
 
 #todo[mention https://veloren.net/, apparently]
 
-#todo[mention ray/path-tracing and BVH acceleration? especially Nanite from UE5, and voxel-Lumen for foliage.
-ties into @sec:concept_approx, but a bit out of our paradigm]
+#refine[]
+For something broader, we have Unreal Engine technologies like Nanite and Lumen, which have been recently improved to support foliage.
+Nanite handles highly detailed geometry, and Lumen simulates light and shadow on top.
+Recent upgrades to Lumen allowed it to more efficiently deal with foliage by using voxelized approximations.
+This is still an emerging area of research, since ray- and path-tracing has traditionally been, and still is, held back by hardware limitations.
+#todo[ties into @sec:concept_approx, but a bit out of our paradigm]
 
 
 == Approach <sec:intro_survey>
 
+#refine[]
 Given the state of things, we can revisit our problem; 
 why do procedurally generated games struggle to present the vastness of their worlds?
 A simple theory is that long view distances need too large of a technical investment for an unproven feature, but a study would be better fit to tackle that question #todo[src?].
