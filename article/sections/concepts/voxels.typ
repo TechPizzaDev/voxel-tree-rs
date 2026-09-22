@@ -1,5 +1,6 @@
 #import "../../markers.typ": todo, refine
 
+== Voxels <sec:concept_voxels>
 Partioning space can help us with _separation of concerns_ /* link https://doi.org/10.1515/JISYS.2006.15.1-4.153 ?*/ in the distributed system that is our game world #todo[src?]. 
 To better explain how one can utilize a hierarchy of grids, 
 we can use _Minecraft_ as an example:
@@ -22,12 +23,10 @@ Density calculations are deterministic and embarrassingly parallel, in other wor
 Caves and cliffs are fun and all, 
 but there is a concurrency problem soon after; 
 the decoration post-processing steps may place structures, vegetation, and ore -- to name a few. 
-The point of congestion is a possibility of decorations intersecting multiple chunks, 
-which is solved by tracking such dependencies and finalizing later.
+The point of congestion is the possibility of decorations intersecting multiple chunks, 
+which is solved by tracking such dependencies and finalizing later in a pre-defined order.
 
 === Rendering
-Chunks render only when fully generated, 
-which is normal for chunking since it avoids the substantial overhead of maintaning rapidly shifting previews.
-
-
-#refine[rendering mentioned; now transition into next section]
+Chunks render only when fully generated. 
+This is normal for chunking since it is easier cache and invalidate,
+and avoids the substantial overhead of maintaning a rapidly shifting preview for incomplete data.

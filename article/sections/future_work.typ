@@ -7,6 +7,11 @@
 #todo[
   expand on @sec:intro and @sec:intro_solutions; "generating noise at different @LOD":
 ]
+
+#todo[_Distant Horizons_ recently gained support for generating a rough heightmap of "the entire world".]
+
+#todo[mention https://veloren.net/, apparently. looks like nice heightmaps]
+
 #refine[
   _Future:_ Investigate how much effort it could be to design a node-based terrain generation system (akin to MC density functions usable from datapacks) from the ground up that incorporates @LOD features from the very beginning. 
   Existing systems such as MC are difficult to rewrite in a way that's backwards-compatible with an @LOD paradigm.
@@ -57,3 +62,12 @@
 #todo[
   tie back with @perceiving_realism_of_procedural_trees_in_games
 ]
+
+== Environmental Integration <sec:future_env>
+
+#refine[
+@sec:concept_env_effects was hot at the start, but we did not have time to experiment with the actual concepts.
+The study has essentially developed one tree in a vacuum without a technical plan to integrate with neighboring vegetation and terrain.
+]
+
+One could say that attractors in @SC are themselves a form of limited resource.

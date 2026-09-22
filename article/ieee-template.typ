@@ -309,7 +309,7 @@
     }
     v(2pt)
   }
-
+  
   // Display the paper's contents.
   body
 

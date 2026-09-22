@@ -4,6 +4,7 @@
 
 #todo[
   This involved a lot of sense-making (apparently hot topic for modern systems and black-boxes)
+  @sense_making
 ]
 
 #todo[
@@ -20,6 +21,10 @@
   - What methods can be combined, and how?
   - Loop back to @LOD and reason around feasability.
 ]
+
+
+
+#line(length: 50%)
 
 #todo[
   - Compare @SC vs shadow propagation @self_organizing_tree_synthesis
@@ -40,6 +45,13 @@
   - elaborate on how terrain can shape placement.
 ]
 
+#line(length: 50%)
+
+#todo[
+  we can classify the methods, starting with @SC:
+  this is a space-filling algo, what else exists?
+]
+
 == Games
 
 ==== Terraria
@@ -51,6 +63,8 @@
   Sounds fair to mention, considering that we can look at their code and see how large trees/structures were generated in practice. 
   This gives us a good glimpse into upsides and pitfalls.
 ]
+
+#todo[mention modded minecraft / inspired by big "sacred rubber tree"? (although those all look the same)]
 
 
 == Neural Networks <sec:discussion_nn>

@@ -1,11 +1,9 @@
-#import "../../markers.typ": todo, refine
+== Environmental Effects <sec:concept_env_effects>
+By exploring bio-mimicry, we may uncover how the surrounding environment 
+can guide and drive a realistic simulation.
+Finite resources are a natural constraint that helps create self-organizing systems.
+Implementing resources in a simulation can also be quite intuitive.
 
-// TODO: find more papers?!
-
-#refine[]
-By exploring bio-mimicry, we uncover how the surrounding environment can guide and drive a realistic simulation.
-
-
-#todo[Explain realistic tree models found in @procedural_diverse_trees and @self_organizing_tree_synthesis]
-
-#todo[Explain how environment/weather/light can affect tree growth @windy_tree_stress_response]
+When searching outside the real-time domain, there exists plentiful research 
+for beautiful and realistic tree models that get far without spinning
+up complex recreations of the physical world, see @sec:algos_sc_env for examples.

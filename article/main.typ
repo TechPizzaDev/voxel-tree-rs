@@ -30,7 +30,7 @@
 #import "sections/indices.typ"
 #import "keywords.typ"
 #import "ieee-template.typ"
-#show: ieee-template.ieee.with( 
+#show: ieee-template.ieee.with(
   title: [Procedural trees for real-time environments],
   abstract: include "sections/abstract.typ",
   authors: (
@@ -48,9 +48,15 @@
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Fig.],
   prefix: {
+    show outline.entry.where(level: 1): it => {
+      v(0.5em)
+      strong(it)
+    }
     indices.headings
 
-    colbreak() // Nudge intro header to next column
+    linebreak()
+
+    // colbreak() // Nudge intro header to next column
   },
 )
 

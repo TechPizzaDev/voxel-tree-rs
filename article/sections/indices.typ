@@ -1,8 +1,9 @@
 
 #let headings = outline(
   title: block("Index"),
+  depth: 3,
   indent: auto,
-  target: selector.or(..(1, 2, 3).map(l => heading.where(level: l))),
+  target: heading,
 );
 
 #let figures = outline(
