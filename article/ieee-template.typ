@@ -207,7 +207,7 @@
       it.body
     } else [
       // Third level headings are run-ins too, but different.
-      #if it.level == 3 {
+      #if it.level <= 4 {
         set text(style: "italic")
         numbering("1.", ..levels)
         [ ]

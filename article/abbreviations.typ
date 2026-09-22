@@ -13,5 +13,6 @@
     ("SC", [Space Colonization]),
     ("SDF", [Signed Distance Field]),
     ("NN", [Neural Network]),
+    ("MC", [Minecraft])
   )
 }

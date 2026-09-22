@@ -26,8 +26,22 @@
 
 #line(length: 50%)
 
+== Comparison
+
 #todo[
-  - Compare @SC vs shadow propagation @self_organizing_tree_synthesis
+  Mention how authors of @trees_with_spa_col are proud that their solution "grows like actual trees". This ties into @sec:concept_approx and @sec:concept_env_effects.
+]
+
+Findings in @sec:algos_gng_spacing could be applied to spawn attractors (@sec:algos_sc_attr_spawn)
+at more optimal distances, since @GNG clouds can be pre-computed at design-time.
+
+#todo[
+  - evaluate performance claims in @ckd_tree
+]
+
+#todo[
+  - Compare @SC vs shadow propagation @self_organizing_tree_synthesis 
+    as a continuation of @sec:concept_env_effects.
 
   - Light and shadow are key to creating natural trees. 
 ]
@@ -57,14 +71,14 @@
 ==== Terraria
 #todo[Mention Terraria "Living Trees"? They were important inspiration after all...]
 
-==== Minecraft
+==== @MC:lo
 #todo[
-  Mention Minecraft mods that were used in thesis slides?
+  Mention @MC mods that were used in thesis slides?
   Sounds fair to mention, considering that we can look at their code and see how large trees/structures were generated in practice. 
   This gives us a good glimpse into upsides and pitfalls.
 ]
 
-#todo[mention modded minecraft / inspired by big "sacred rubber tree"? (although those all look the same)]
+#todo[mention modded @MC / inspired by big "sacred rubber tree"? (although those all look the same)]
 
 
 == Neural Networks <sec:discussion_nn>
@@ -76,5 +90,5 @@ we tried to look away from prominent solutions such as transformers or diffusion
 These techniques of today, even considering modern hardware, leave a lot to be desired across the board when it comes to performance, efficiency, efficacy, and training #todo[src?].
 The controllability from a designer perspective is also poor.
 
-This did not stop others from attempting to replace noise-based terrain with something more aesthetic #todo[mention MC terrain diffusion mod?].
+This did not stop others from attempting to replace noise-based terrain with something more aesthetic #todo[mention @MC terrain diffusion mod?].
 #link("https://github.com/xandergos/terrain-diffusion-mc")
