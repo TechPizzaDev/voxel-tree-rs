@@ -13,7 +13,7 @@
 
   #include "discussion.typ"
 
-  #include "future_work.typ"
+  #include "future_work/mod.typ"
 
   #include "conclusion.typ"
 
