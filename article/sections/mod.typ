@@ -7,7 +7,7 @@
 
   #include "algos/mod.typ"
 
-  #include "artifacts.typ"
+  #include "artifacts/mod.typ"
 
   #include "results.typ"
 
