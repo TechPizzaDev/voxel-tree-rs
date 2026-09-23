@@ -11,7 +11,7 @@
 
   #include "results.typ"
 
-  #include "discussion.typ"
+  #include "discussion/mod.typ"
 
   #include "future_work/mod.typ"
 
