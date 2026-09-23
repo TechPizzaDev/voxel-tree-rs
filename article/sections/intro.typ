@@ -18,6 +18,8 @@ _#[@MC]_ #footnote[https://www.minecraft.net] or
 This doubt lead to an early narrowing in scope towards "procedural trees", 
 leading us to familiar yet relevant territory.      
 
+#colbreak()
+
 Vegetation can make for effective decoration after all, 
 often carrying the visuals by fleshing the world with familiar colors 
 and improving immersion for players #todo[src?]. 

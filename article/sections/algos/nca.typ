@@ -1,6 +1,7 @@
 #import "../../markers.typ": todo
 
 == @NCA:lo <sec:algos_nca>
+
 When growing this approach may look adjacent to image diffusion,
 but integration of cellular automata sets them apart.
 Instead of teaching large @NN:pla to refine noise 

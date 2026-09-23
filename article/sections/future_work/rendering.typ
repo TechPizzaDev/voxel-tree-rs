@@ -1,10 +1,11 @@
-#import "../../markers.typ": todo
-
 == Better Rendering <sec:future_rendering>
 
-#todo[minimal rendering framework; the trees are not interesting/novel compared to prior work, and visualization of experiments was somewhat hindered by the framework (worth it tho).
+Our minimal rendering framework was mostly used to just visualize data. 
+The trees it can draw are not at all interesting compared to prior work, 
+but for the type of work we did, the iteration speed was worth the setup.
+The useful things missing were text rendering and gizmos, 
+which would help debug node numbers in 3D space.
 
-  _Future:_ better rendering to
-  1. spend less time in debugging/testing
-  2. attempt reaching parity with @self_organizing_tree_synthesis in particular
-]
+Existing game engines should have no problem at achieving 
+the visual quality of @self_organizing_tree_synthesis.
+Textured materials in our artifact would be nice to have.

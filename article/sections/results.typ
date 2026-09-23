@@ -7,38 +7,56 @@
   - We tested spatial hash buckets, and our attempt suffered from data duplication and high overlap during lookups.
 
   - We also tested octrees, which had the highest construction time, unbalanced storage, and unbalanced lookup time.
-  
+
   - Insertion parameters for our R\* tree can be tuned, but only for marginal gains.
 ]
 
-#let sc_img(source, caption) = figure(
-  box(image(source), stroke: 0.5pt + gray, height: 128pt, clip: true, inset: (
-    bottom: -108pt,
-  )),
+#let sc_img(source, caption, fill: none) = figure(
+  rect(
+    box(image(source), height: 128pt, clip: true, inset: (
+      bottom: -108pt,
+    )),
+    fill: fill,
+    stroke: 0.5pt + gray,
+    inset: 0pt,
+  ),
   caption: caption,
 )
 
-#colbreak() // TODO: remove break
+#linebreak()
+#todo[
+  Improve image readability. Add more in appendix.
+]
+
+#grid(
+  columns: 2,
+  row-gutter: 1em,
+  [#sc_img(
+    "../img/SC,before,box.png",
+    [@SC box before growth.],
+    fill: rgb("#646464"),
+  )],
+  [#sc_img(
+    "../img/SC,after,box.png",
+    [@SC box after growth.],
+  )],
+
+  [#sc_img(
+    "../img/SC,before,egg.png",
+    [@SC egg before growth.],
+    fill: rgb("#646464"),
+  )],
+  [#sc_img(
+    "../img/SC,after,egg.png",
+    [@SC egg after growth.],
+  )],
+)
 
 #todo[
-  Improve readability of these images... \
-  and add more interesting images (probably as appendix)
-  #grid(
-    columns: 2,
-    row-gutter: 1em,
-    [#sc_img("../img/SC,before,box.png", [@SC box before growth.])],
-    [#sc_img("../img/SC,after,box.png", [@SC box after growth.])],
+  - demonstrate parametrized examples from exploration
 
-    [#sc_img("../img/SC,before,egg.png", [@SC egg before growth.])],
-    [#sc_img("../img/SC,after,egg.png", [@SC egg after growth.])],
-  )
-
-  #todo[
-    - demonstrate parametrized examples from exploration
-
-    // TODO: maybe this goes into discussion too?
-    - variation comes from a combination of point cloud shape, influence distance, kill distance.
-  ]
+  // TODO: maybe this goes into discussion too?
+  - variation comes from a combination of point cloud shape, influence distance, kill distance.
 ]
 
 \
@@ -65,13 +83,13 @@
   caption: "Data structure metrics for 20000 randomly distributed attractors.",
 ) <data_structure_metrics>
 
-Hardware: 
+Hardware:
 - CPU: AMD Ryzen 7 7700X 8-Core
 - RAM: $2 times 32$ GB, DDR5 5200 MT/s, CL32
 
 == @NCA:lo
 #refine[Preliminary result around @NCA @growing_3d_artefacts:
-  - Growth quickly collapses by scaling weights with values below one.
+  - Growth quickly collapses by scaling weights with values less than one.
   - Introducing more randomness to cell propagation creates spurious growths, which may be effective for tree variation, but may appear too close to unnatural overgrowth without introducing new restrictions.
 
   #grid(

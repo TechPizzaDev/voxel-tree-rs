@@ -1,5 +1,3 @@
-#import "../../markers.typ": todo
-
 == Rendering Framework
 
 To ease experiments regarding our algorithms of choice, 
@@ -12,5 +10,3 @@ this research, which is why we settled on Rust early and out of familiarity.
 This gave us access to high-quality libraries that provide essentials like 
 graphics @API:s (`wgpu`), immediate mode @GUI:s (`egui`), 
 and acceleration structures (`rstar`).
-
-#todo[Write more?]

@@ -64,6 +64,10 @@ would likely require a new approach overall.
 
 #todo[Using @SDF to spawn attractors]
 
+#todo[
+  Discuss future work from @SC papers: convert scanned point clouds of real trees to algo params?
+]
+
 === Versatility
 With our definition of real-time #todo[define real-time in intro maybe?], 
 we luckily do not need to worry about achieving predictable time complexities. 
@@ -80,4 +84,4 @@ into a rigid grid #todo[any good reference?].
 #todo[shortly describe point->voxel process (and e.g. ->@MC block)]
 
 === Incremental Growth
-#todo[@SC can be grown over multiple steps (or over multiple game frames) allowing for massive structures without a hitch]
+@SC can be grown over multiple steps i.e. over multiple game frames, allowing for massive structures without a hitch.

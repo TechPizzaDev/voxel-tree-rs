@@ -1,21 +1,22 @@
-#import "../../markers.typ": todo
-
 == Persistent Homology <sec:future_barcode>
 
-#todo[Describe how tree shape can be measured or compared with "barcodes" @persistent_homology, and how this can be used by developers to guide parameters]
+_Persistent Homology_ is "designed to uncover geometric and 
+topological features of data across multiple scales" @persistent_homology. \
+In other words, it could be used to measure and compare trees through "barcodes".
+Turning subjective geometry into objective descriptions is a complex topic,
+but this bridge between qualitative and quantitave studies is very useful. 
 
-#todo[
-  https://github.com/peterbraden/genetic-lisa
-  - related to @persistent_homology and 
-  - abstract triangles vs rigid cells (of @NCA)
-  - genetic/neural algo to spawn @SC attractors?
-]
+=== Mutation
+For a biologically grounded comparison, 
+let us reimagine the barcodes as mutations and genes.
+An obvious gene could then be coding for tree height,
+made easier when accounting for perspective or just distance to the player.
+This could then be correlated with the subliminal effect per the introduction.
 
-#todo[
-  We may exploit this through distinct mutations, 
-  with one of the most obvious variations being tree height when accounting for distance #todo[src ...me? find science?]. 
-]
+#colbreak()
 
-#todo[
-  tie back with @perceiving_realism_of_procedural_trees_in_games
-]
+We also explored a collection of projects where the goal 
+is mutating 2D patches to resemble famous paintings
+#footnote[https://github.com/peterbraden/genetic-lisa].
+It was refreshing to see abstract triangles freely shifting
+after the adventure with @NCA.

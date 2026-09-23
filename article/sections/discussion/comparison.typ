@@ -39,8 +39,8 @@ and it is very feasible for developers to add new behaviors and node interaction
 Our artifact pales in comparison with mentioned papers in all aspects 
 except performance. 
 There was not enough time to recreate all the knobs or visuals, 
-but we made sure the R\*-tree would not prohibit future expansions. 
+but we made sure the #box[R\*-tree] would not prohibit future expansions. 
 
 The authors of @trees_with_spa_col were proud that their solution 
 "grows like actual trees", and we agree with the sentiment. 
-This ties well into @sec:concept_approx and @sec:concept_env_effects.
+This also ties well into @sec:concept_approx and @sec:concept_env_effects.
