@@ -15,6 +15,7 @@
   - This algo struggles to settle on novel shapes, i.e. anything outside training data.
 ]
 
+// TODO: most of these can go
 #todo[
   - Pruning methods; why is it important, how to measure?
 

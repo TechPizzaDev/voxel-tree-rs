@@ -48,6 +48,8 @@ trees in a performant manner?"
 This question was chosen with limited time and scope in mind, 
 while also allowing us to explore supplementary techniques. 
 
+"How suitable are different procedural generation algorithms for real-time environment in terms of performance and controllability"
+
 == Solutions <sec:intro_solutions>
 
 Since the player's viewport into the virtual world is limited, 
