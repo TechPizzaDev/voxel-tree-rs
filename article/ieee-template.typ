@@ -298,14 +298,15 @@
   // Display abstract and index terms.
   if abstract != none {
     set par(spacing: 0.45em, leading: 0.45em)
-    set text(9pt, weight: 700, spacing: 150%)
+    set text(10pt, spacing: 100%)
 
-    [_Abstract_---#h(weak: true, 0pt)#abstract] 
+    [*_Abstract_*---#h(weak: true, 0pt)#abstract] 
     v(0.45em)
-
+    
     if index-terms != () {
+      set text(10pt, spacing: 100%)
       parbreak()
-      [_Index Terms_---#h(weak: true, 0pt)#index-terms.join[, ]]
+      [*_Index Terms_*---#h(weak: true, 0pt)#index-terms.join[, ]]
     }
     v(2pt)
   }

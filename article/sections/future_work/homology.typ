@@ -9,11 +9,10 @@ but this bridge between qualitative and quantitave studies is very useful.
 === Mutation
 For a biologically grounded comparison, 
 let us reimagine the barcodes as mutations and genes.
+\
 An obvious gene could then be coding for tree height,
-made easier when accounting for perspective or just distance to the player.
-This could then be correlated with the subliminal effect per the introduction.
-
-#colbreak()
+made easier if accounting for perspective or distance to the player.
+This correlates with the subliminal effect per the introduction.
 
 We also explored a collection of projects where the goal 
 is mutating 2D patches to resemble famous paintings

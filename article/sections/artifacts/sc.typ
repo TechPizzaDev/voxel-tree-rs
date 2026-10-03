@@ -1,5 +1,3 @@
-#import "../../markers.typ": todo, refine
-
 == @SC:lo <sec:artifact_sc>
 
 We implemented the @SC algorithm by following instructions in 
@@ -23,7 +21,7 @@ but increased both memory usage and removal time due to excessive duplication.
 Cost remained high even while utilizing packed references as small as 16-bit; 
 enough for $65535$ attractors, or $2^16$ indices minus $1$ tombstone. 
 Generally referred to as a _memory arena_, it allows self-referential indices 
-and reduces data movement #todo[src?].
+and can simplify deallocation by dropping whole ranges.
 
 The structures we explored usually trade construction time and memory for 
 improved lookup times. 
@@ -46,10 +44,6 @@ all while maintaining fast @NNS regardless of influence radius.
 This was now a faithful reimplementation of the @SC algorithm.
 
 === Parameters
-#todo[explain how parameters can be expanded upon, e.g. alternating node activations, non-immediate attractor death]
-
-#todo[these params are related to but quite far away from a more "polished product" like presented in @procedural_diverse_trees section 4.1 appendix A]
-
 The main variables $d_i$, $d_k$, and $D$ can lead to very different 
 generation times for a particular attractor cloud. 
 Smaller segments lead to fewer attractors potentially being killed per new node,
@@ -59,29 +53,45 @@ large influence distances, but this variability can fundamentally
 not be eliminated without a different growth strategy and 
 would likely require a new approach overall. 
 
-=== Attractor Spawning <sec:algos_sc_attr_spawn>
-#todo[describe how the cloud shapes the tree]
+The main variables are far away from a "polished product" 
+like presented in section 4.1 of @procedural_diverse_trees.
+Even those can be further expanded upon through
+e.g. alternating node activations or non-immediate attractor death.
+We did not try anything fancy since this relies too much on game context.
 
-#todo[Using @SDF to spawn attractors]
+=== Attractors <sec:algos_sc_attr>
+Parameters are only half the story, 
+with the placement of attractors giving a tree some distinct form.
+The distance between and grouping of points determines 
+where branches grow toward and consequently split.
+Nodes do not actually "branch out" though --
+previous nodes get assigned outstanding attractors as big groups are consumed.
+Treating nodes as buds is also a clever trick, see @sec:future_env_shadow.
 
-#todo[
-  Discuss future work from @SC papers: convert scanned point clouds of real trees to algo params?
-]
+Future work from @SC paper(s) mention novel ideas for generating attractors.
+One fun idea is to convert 3D scans of real trees to point clouds,
+though the parameters are not easy to just guess from scans.
+On a more technical note, we prefer sampling @SDF functions
+to spawn attractors, which would be performant 
+and easy for designers to pick, combine, and visualize.
 
 === Versatility
-With our definition of real-time #todo[define real-time in intro maybe?], 
-we luckily do not need to worry about achieving predictable time complexities. 
+With our real-time requirement, 
+we can worry less about theoretical time complexities. 
 We can tune both parameters and data, allowing designers to also 
 allocate time towards post-processing of the generated skeleton. 
 Point clouds are unlikely to be useful in their raw form, 
-#todo[incorporate @procedural_diverse_trees ref] but the methods for sprucing them up are vast. 
+but the methods for sprucing them up are vast @procedural_diverse_trees. 
 
 The @SC paper already mentions decimation and subdivision along branch curves, 
 but these operate on points to improve detail. 
 An example that is more relevant to us, and closer to the tail end of 
 the content pipeline, is voxelization; the act of turning smooth geometry 
-into a rigid grid #todo[any good reference?]. 
-#todo[shortly describe point->voxel process (and e.g. ->@MC block)]
+into a rigid grid. 
+A simple raycast that sets a block per step can be used to simulate subdivision.
 
 === Incremental Growth
-@SC can be grown over multiple steps i.e. over multiple game frames, allowing for massive structures without a hitch.
+@SC can be grown over multiple steps i.e. over multiple game frames or ticks, 
+allowing for massive structures to appear without a hitch.
+There is also the quirk of the tree growing in a natural bottom-up direction,
+and if desired, a growth animation can be used instead of pop-in.

@@ -1,6 +1,6 @@
 == Environmental Integration <sec:future_env>
 
-=== Light and Shadow
+=== Light and Shadow <sec:future_env_shadow>
 Shadow propagation, as introduced by @self_organizing_tree_synthesis,
 was a great nature-inspired method we liked.
 It augments @SC by constraining branch splits to buds,

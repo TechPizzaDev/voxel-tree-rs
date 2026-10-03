@@ -1,9 +1,7 @@
-#import "../../markers.typ": todo, refine
-
 == Voxels <sec:concept_voxels>
 Partioning space can help us with _separation of concerns_ 
 /* link https://doi.org/10.1515/JISYS.2006.15.1-4.153 ?*/ 
-in the distributed system that is our game world #todo[src?]. 
+in the distributed system that is our game world. // TODO: src?
 To better explain how one can utilize a hierarchy of grids, 
 we can use @MC as an example:
 

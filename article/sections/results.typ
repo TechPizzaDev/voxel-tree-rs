@@ -3,13 +3,7 @@
 = Results <sec:results>
 
 == @SC:lo
-#refine[@SC reimplementation:
-  - We tested spatial hash buckets, and our attempt suffered from data duplication and high overlap during lookups.
-
-  - We also tested octrees, which had the highest construction time, unbalanced storage, and unbalanced lookup time.
-
-  - Insertion parameters for our R\* tree can be tuned, but only for marginal gains.
-]
+#refine[@SC reimplementation:]
 
 #let sc_img(source, caption, fill: none) = figure(
   rect(
@@ -24,9 +18,8 @@
 )
 
 #linebreak()
-#todo[
-  Improve image readability. Add more in appendix.
-]
+
+// TODO: Improve image readability. Add more in appendix.
 
 #grid(
   columns: 2,
@@ -59,7 +52,14 @@
   - variation comes from a combination of point cloud shape, influence distance, kill distance.
 ]
 
-\
+#linebreak()
+
+#todo[
+  - We tested spatial hash buckets, and our attempt suffered from data duplication and high overlap during lookups.
+
+  - We also tested octrees, which had the highest construction time, unbalanced storage, and unbalanced lookup time.
+]
+
 #todo[
   Write about data structure exploration and explain @data_structure_metrics.
 ]
@@ -88,20 +88,20 @@ Hardware:
 - RAM: $2 times 32$ GB, DDR5 5200 MT/s, CL32
 
 == @NCA:lo
-#refine[Preliminary result around @NCA @growing_3d_artefacts:
-  - Growth quickly collapses by scaling weights with values less than one.
-  - Introducing more randomness to cell propagation creates spurious growths, which may be effective for tree variation, but may appear too close to unnatural overgrowth without introducing new restrictions.
+Growth quickly collapses when scaling weights with values less than one,
+making the tree disappear.
+On the other hand, introducing randomness to cell propagation creates
+spurious growths seen in @fig_nca_growths. 
 
-  #grid(
-    columns: 2,
-    gutter: 2pt,
-    [#figure(
-      image("../img/NCA,original.png"),
-      caption: [Original @NCA tree],
-    )],
-    [#figure(
-      image("../img/NCA,modified,lifemask_0.2,fire_0.75.png"),
-      caption: [Experimental @NCA tree with factors: $"mask"=0.2, "fire"=0.75$],
-    )],
-  )
-]
+#grid(
+  columns: 2,
+  gutter: 2pt,
+  [#figure(
+    image("../img/NCA,original.png"),
+    caption: [Original @NCA tree],
+  )],
+  [#figure(
+    image("../img/NCA,modified,lifemask_0.2,fire_0.75.png"),
+    caption: [@NCA tree with factors: $"mask"=0.2, "fire"=0.75$],
+  ) <fig_nca_growths>],
+)

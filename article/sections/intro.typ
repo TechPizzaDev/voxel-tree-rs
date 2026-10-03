@@ -1,11 +1,9 @@
-#import "../markers.typ": todo
-
 = Introduction <sec:intro>
 
 Procedurally generated content has seen decent traction in games over the years. 
 Techniques come in numerous shapes and sizes,
 however the _survival sandbox_ genre sticks out as particularly 
-demanding across many aspects #todo[src?].
+demanding across many aspects.
 
 The initial concept for this thesis went along the lines of 
 "procedural noise-based terrain at massive scale", 
@@ -22,7 +20,7 @@ leading us to familiar yet relevant territory.
 
 Vegetation can make for effective decoration after all, 
 often carrying the visuals by fleshing the world with familiar colors 
-and improving immersion for players #todo[src?]. 
+and improving immersion for players. // TODO: src? 
 Trees in particular play an important role due to their relative occupancy 
 of the player's field of view, to the extent of acting as 
 subliminal landmarks @perceiving_realism_of_procedural_trees_in_games.
@@ -35,20 +33,21 @@ With the scope in place, we need to gaze at what it takes to
 bring us up to speed for real-time rendering.
 There is unfortunately some level of "chicken and egg" paradox at play here, 
 where resource unavailability usually forces us into simpler 
-"good enough" solutions #todo[src], see @sec:concept_design.
+"good enough" solutions /* TODO: src? */, see @sec:concept_design.
 Trees are common and recognizable vegetation in games, 
-but often rely on handcrafted, reusable, and highly stylized assets #todo[src?]. 
+but often rely on handcrafted, reusable, and highly stylized assets. // TODO: src? 
 To address our gap in a manageable manner, we explore the 
 potential of procedural generation to break visual uniformity, 
 ideally without increasing development costs.
 
 === *RQ*
-"Which algorithms support real-time generation of 
-trees in a performant manner?"
-This question was chosen with limited time and scope in mind, 
-while also allowing us to explore supplementary techniques. 
+1. "Which algorithms support real-time generation of 
+  trees in a performant manner?"
+2. "How suitable are different procedural generation algorithms for 
+  real-time environment in terms of performance and controllability?"
 
-"How suitable are different procedural generation algorithms for real-time environment in terms of performance and controllability"
+These questions were chosen with limited time and scope in mind, 
+while also allowing us to explore multiple techniques. 
 
 == Solutions <sec:intro_solutions>
 
@@ -70,7 +69,7 @@ but we won't dwell on terrain in this study.
 Simplifying geometry is generally difficult to stylize in a 
 dynamic environment without noticable shadow artifacts or pop-in, 
 so many games get by with static environments. 
-#todo[sources!]
+// TODO: sources?
 
 === Outer Space
 So far, we only described optimized rendering of full-resolution data.
@@ -86,7 +85,8 @@ which happens to be main driver behind this study.
 Both games use hierarchies of voxels to store and represent terrain,
 see @sec:concept_voxels,
 albeit visualize them with _marching cubes_ for a smooth look @marching_cubes, 
-compared to the blocky look people may be used to when they think of voxels #todo[src that thought?].
+compared to the blocky look people may be used to when they think of voxels 
+// TODO: src that thought?
 
 Without a planetary preview or map of nearby structures,
 the player would have a difficult and boring time navigating around, 
@@ -99,7 +99,7 @@ Integration of long-distance sight with gameplay is a challenge.
 
 Games with space exploration at their core are a minority that 
 successfully showcase extreme view distances in a way that 
-meaningfully integrates with gameplay #todo[src?]. 
+meaningfully integrates with gameplay. // TODO: src? 
 Games are generally the primary source of invention here, which means 
 smaller representation of procedural features to borrow from.
 
@@ -124,7 +124,7 @@ be generated at different scales.
 And for something broader, we have _Unreal Engine_ 
 #footnote[https://www.unrealengine.com/unreal-engine-5]
 technologies like _Nanite_ and _Lumen_, 
-which have been recently improved to support foliage #todo[src].
+which have been recently improved to support foliage.
 _Nanite_ handles highly detailed geometry, and
 _Lumen_ simulates light and shadow on top.
 Recent upgrades to _Lumen_ allowed it to more efficiently deal with 
@@ -135,12 +135,12 @@ has traditionally been, and still is, held back by hardware limitations.
 
 == Approach <sec:intro_survey>
 
-Given the state of things, we can revisit our overarching problem; 
+Given the state of things, we can revisit an overarching problem; 
 why do procedurally generated games struggle to present 
 the vastness of their worlds?
 A simple theory is that long view distances need too large of a 
 technical investment for an unproven feature, but a qualitative study 
-would be better fit to tackle that question #todo[src?].
+of games would be better fit to tackle that question.
 
 Our study tries to put technical aspects on the spotlight, but games are
 undeniably more than just engineering problems to be solved in a vacuum.

@@ -221,6 +221,8 @@ impl SpaCol {
             n.grow_dir = Vec3A::default();
             n.connected_attractors = 0;
 
+            // TODO: collect new nodes and insert in bulk?
+            //       would need new RTree bulk method...
             self.push_node(child);
         }
 

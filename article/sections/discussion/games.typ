@@ -7,7 +7,7 @@ _Living Trees_ in _Terraria_ #footnote[https://www.terraria.org/]
 are structures that spawn on the surface and in underground jungles. 
 Players enjoy building bases around or inside such trees, 
 to the point of the developers increasing the likelyhood of 
-trees spawning next to eachother, for players to build overhang treehouses
+trees spawning in groups, for players to build overhang treehouses
 #footnote[https://terraria.wiki.gg/wiki/Living_Tree#History].
 
 === @MC:lo

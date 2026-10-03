@@ -18,4 +18,4 @@ especially if the artistic vision is not in need of realism,
 or when technical limitations pressure us into 
 finding more performant solutions. 
 All this while subjects need to fit in a 
-given media without feeling out of place #todo[src?].
+given media without feeling out of place. // TODO: src?

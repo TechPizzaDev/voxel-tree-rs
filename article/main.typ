@@ -49,7 +49,7 @@
   figure-supplement: [Fig.],
   prefix: {
     show outline.entry.where(level: 1): it => {
-      v(0.6em)
+      v(0.5em)
       strong(it)
     }
     indices.headings
