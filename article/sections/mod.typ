@@ -9,7 +9,7 @@
 
   #include "artifacts/mod.typ"
 
-  #include "results.typ"
+  #include "results/mod.typ"
 
   #include "discussion/mod.typ"
 

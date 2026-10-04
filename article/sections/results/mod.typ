@@ -1,4 +1,4 @@
-#import "../markers.typ": refine, todo
+#import "../../markers.typ": refine, todo
 
 = Results <sec:results>
 
@@ -25,22 +25,22 @@
   columns: 2,
   row-gutter: 1em,
   [#sc_img(
-    "../img/SC,before,box.png",
+    "../../img/SC,before,box.png",
     [@SC box before growth.],
     fill: rgb("#646464"),
   )],
   [#sc_img(
-    "../img/SC,after,box.png",
+    "../../img/SC,after,box.png",
     [@SC box after growth.],
   )],
 
   [#sc_img(
-    "../img/SC,before,egg.png",
+    "../../img/SC,before,egg.png",
     [@SC egg before growth.],
     fill: rgb("#646464"),
   )],
   [#sc_img(
-    "../img/SC,after,egg.png",
+    "../../img/SC,after,egg.png",
     [@SC egg after growth.],
   )],
 )
@@ -69,15 +69,16 @@
 
 #figure(
   [
-    #todo[sift through git and get exact timings for buckets and octree, and maybe be more concise about the Memory column...]
+    // TODO: sift through git and get *exact* timings for buckets and octree, 
+    //       and maybe be more concise about the Memory column...
 
     #table(
       columns: 4,
       [], [Construct], [Lookup], [Memory],
 
-      // TODO: load from file?
-      [Octree], [#ms(100)], [#ms(1500)], [Low],
-      [Spatial Hash], [#ms(200)], [#ms(800)], [High],
+      // TODO: load table data from file?
+      [Octree], [#ms(100)], [#ms(1500)], [High],
+      [Spatial Hash], [#ms(200)], [#ms(800)], [Medium],
       [R\*-tree], [#ms(1.5)], [#ms(300)], [Low],
     )],
   caption: "Data structure metrics for 20000 randomly distributed attractors.",
@@ -97,11 +98,11 @@ spurious growths seen in @fig_nca_growths.
   columns: 2,
   gutter: 2pt,
   [#figure(
-    image("../img/NCA,original.png"),
+    image("../../img/NCA,original.png"),
     caption: [Original @NCA tree],
   )],
   [#figure(
-    image("../img/NCA,modified,lifemask_0.2,fire_0.75.png"),
+    image("../../img/NCA,modified,lifemask_0.2,fire_0.75.png"),
     caption: [@NCA tree with factors: $"mask"=0.2, "fire"=0.75$],
   ) <fig_nca_growths>],
 )
