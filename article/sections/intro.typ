@@ -5,7 +5,7 @@ Techniques come in numerous shapes and sizes,
 however the _survival sandbox_ genre sticks out as particularly 
 demanding across many aspects.
 
-The initial concept for this thesis went along the lines of 
+The initial thesis concept went along the lines of 
 "procedural noise-based terrain at massive scale", 
 stemming from the lack of real-time procedural game worlds that 
 utilize their endless generators for extreme view distances. 
@@ -42,9 +42,9 @@ ideally without increasing development costs.
 
 === *RQ*
 1. "Which algorithms support real-time generation of 
-  trees in a performant manner?"
+    trees in a performant manner?"
 2. "How suitable are different procedural generation algorithms for 
-  real-time environment in terms of performance and controllability?"
+    real-time environment in terms of performance and controllability?"
 
 These questions were chosen with limited time and scope in mind, 
 while also allowing us to explore multiple techniques. 
@@ -81,11 +81,11 @@ provide long view distance almost out of necessity.
 Striving for realistic scales of the universe without any
 sort of @LOD is technically infeasible.
 These games generate data at lower resolutions from the get-go, 
-which happens to be main driver behind this study.
+which happen to be main driver behind this study.
 Both games use hierarchies of voxels to store and represent terrain,
 see @sec:concept_voxels,
 albeit visualize them with _marching cubes_ for a smooth look @marching_cubes, 
-compared to the blocky look people may be used to when they think of voxels 
+compared to the cubes people may be used to when they think of voxels.
 // TODO: src that thought?
 
 Without a planetary preview or map of nearby structures,

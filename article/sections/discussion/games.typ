@@ -1,6 +1,7 @@
 == Games
 
-Most of the inspiration behind this research came from the games we enjoy.
+Most of the inspiration behind this research came from the games we enjoy,
+with two of the primary ones listed below.
 
 === Terraria
 _Living Trees_ in _Terraria_ #footnote[https://www.terraria.org/] 

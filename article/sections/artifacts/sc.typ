@@ -41,7 +41,8 @@ Using an existing library (`rstar`), we managed to further decrease
 lookup time and trivialize construction cost while 
 creating an optimal tree since we have all points upfront, 
 all while maintaining fast @NNS regardless of influence radius. 
-This was now a faithful reimplementation of the @SC algorithm.
+This was now a faithful reimplementation of the @SC algorithm,
+with informal metrics in @data_structure_metrics.
 
 === Parameters
 The main variables $d_i$, $d_k$, and $D$ can lead to very different 
@@ -88,7 +89,7 @@ but these operate on points to improve detail.
 An example that is more relevant to us, and closer to the tail end of 
 the content pipeline, is voxelization; the act of turning smooth geometry 
 into a rigid grid. 
-A simple raycast that sets a block per step can be used to simulate subdivision.
+A simple ray-cast that sets a block per step can be used to simulate subdivision.
 
 === Incremental Growth
 @SC can be grown over multiple steps i.e. over multiple game frames or ticks, 

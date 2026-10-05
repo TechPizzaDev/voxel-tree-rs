@@ -1,9 +1,6 @@
 
 #let define(abbr) = {
   abbr.make(
-    // TODO: attach references
-    ("API", [Application Programming Interface]),
-    ("GUI", [Graphical User Interface]),
     ("NNS", [Nearest Neighbor Search]),
     ("UI", [User Interface]),
     ("UX", [User Experience]),

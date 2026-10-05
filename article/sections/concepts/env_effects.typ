@@ -1,6 +1,6 @@
 == Environmental Effects <sec:concept_env_effects>
 
-By exploring bio-mimicry, we may uncover how the surrounding environment 
+By exploring biomimicry, we may uncover how the surrounding environment 
 can guide and drive a realistic simulation.
 Finite resources are a natural constraint that helps create self-organizing systems.
 That makes implementing resources in a simulation quite intuitive.

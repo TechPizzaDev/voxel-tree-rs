@@ -1,19 +1,28 @@
 == Comparison
 
 === Performance
+
+==== @SC
 It is difficult to make a performance comparison with the original
-Voronoi diagram solution in the @SC paper @trees_with_spa_col because
-they do not list any numbers, and we were not able to reproduce their setup
-Suffice to say, constructing a R\*-tree in bulk is most likely faster
-than making a Voronoi diagram.
-We found an optimized KD-tree implementation @ckd_tree,
+Voronoi diagram solution in @trees_with_spa_col because
+they do not list concrete numbers, and we were not able to reproduce their setup.
+Suffice to say, constructing a R\*-tree in bulk should be 
+in the same ballpark as building a Voronoi diagram, 
+as both structures self-balance in a similar manner.
+We did find an optimized KD-tree construction @ckd_tree,
 but the numbers in their figures 4 and 5 do not compare
-against R\*-tree, only R-tree, so we decided not to test KD-tree.
+against R\*-tree, only R-tree, so we decided to not test KD-tree.
 
 This was a pain-point we solved from the future-work section of @trees_with_spa_col.
-Another benefit of the R\*-tree is that segment size $D$ does not
+A benefit of the R\*-tree is that segment size $D$ does not
 signficantly affect lookup performance.
-Insertion parameters for our R\*-tree can be tuned, but only for marginal gains.
+Insertion parameters can be tuned, but only for marginal gains.
+
+==== @NCA and @GNG
+@NCA, as presented with voxels, is not suitable for real-time generation.
+@GNG was not tested since it was not used.
+Training is very slow for @NN techniques in general, 
+and inference is inefficient on CPU:s.
 
 === Customizability
 
@@ -28,7 +37,7 @@ since @GNG clouds can be pre-computed at design-time and evaluated cheaply later
 ==== @NCA
 Needs to be trained on the cells i.e. pixels or voxels of an existing shape. 
 After training, it will attempt to reproduce the shape at all costs. 
-Modifying the internals, like liveness mask or model weights, 
+Modifying the internals, like liveness mask or weights, 
 is not effective in customizing the shape, and 
 it is trivial to make the shape explode.
 

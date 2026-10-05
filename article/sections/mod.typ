@@ -17,9 +17,11 @@
 
   #include "conclusion.typ"
 
+  #pagebreak()
+
   #abbr.list(title: "Glossary", columns: 1)
 
-  #colbreak() // Nudge end-of-document headers to next column
+  // #colbreak() // Nudge end-of-document headers to next column
 
   #indices.figures
 
